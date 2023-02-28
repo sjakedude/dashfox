@@ -79,4 +79,4 @@ def status_gungame():
         return generate_response(200, "OFFLINE")
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="192.168.0.219", port=5000, debug=True)
