@@ -83,7 +83,7 @@ def restart_gungame():
     try:
         process_list=str(check_output("tasklist", shell=True)).split("\\r\\n")
         for process in process_list:
-            if "chrome.exe" in process:
+            if "plutonium-bootstrapper-wi" in process:
                 details = process.split()
                 pid = details[1]
                 print(pid)
