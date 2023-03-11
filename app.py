@@ -86,12 +86,9 @@ def restart_gungame():
             if "plutonium-bootstrapper-wi" in process:
                 details = process.split()
                 pid = details[1]
-                print(pid)
                 result=str(check_output(f"Taskkill /F /PID {pid}", shell=True))
-                print(result)
-        if "plutonium-bootstrapper-wi" in process_list:
-            # Time to restart
-            return generate_response(200, "RESTARTING")
+                if "SUCCESS" in result:
+                    return generate_response(200, "RESTARTING")
         else:
             return generate_response(200, "ERROR")
     except CalledProcessError:
@@ -100,5 +97,4 @@ def restart_gungame():
 
 
 if __name__ == "__main__":
-    #app.run(host="localhost", port=5000, debug=True)
     app.run(host="192.168.0.219", port=5000, debug=True)
