@@ -71,12 +71,34 @@ def status_mouse():
 def status_gungame():
     try:
         process_list=str(check_output("tasklist", shell=True))
-        if "Plutonium.exe" in process_list:
+        if "plutonium-bootstrapper-wi" in process_list:
             return generate_response(200, "ONLINE")
         else:
             return generate_response(200, "OFFLINE")
     except CalledProcessError:
         return generate_response(200, "OFFLINE")
 
+@app.route("/restart_gungame", endpoint="restart_gungame", methods=["GET"])
+def restart_gungame():
+    try:
+        process_list=str(check_output("tasklist", shell=True)).split("\\r\\n")
+        for process in process_list:
+            if "chrome.exe" in process:
+                details = process.split()
+                pid = details[1]
+                print(pid)
+                result=str(check_output(f"Taskkill /F /PID {pid}", shell=True))
+                print(result)
+        if "plutonium-bootstrapper-wi" in process_list:
+            # Time to restart
+            return generate_response(200, "RESTARTING")
+        else:
+            return generate_response(200, "ERROR")
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+
+
 if __name__ == "__main__":
+    #app.run(host="localhost", port=5000, debug=True)
     app.run(host="192.168.0.219", port=5000, debug=True)
