@@ -10,7 +10,6 @@ from subprocess import CalledProcessError
 
 app = Flask(__name__)
 
-
 def generate_response(status, text):
     response = Response(text, status=status)
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -20,80 +19,13 @@ def generate_response(status, text):
 def connect():
     return "DashFox Backend API is ONLINE"
 
-
-@app.route("/status_pihole", endpoint="status_pihole", methods=["GET"])
-def status_pihole():
+@app.route("/plutonium/status", endpoint="plutonium_status", methods=["GET"])
+def plutonium_status():
     try:
-        dir=str(check_output("docker ps", shell=True))
-        if "pihole" in dir:
-            return generate_response(200, "ONLINE")
-        else:
-            return generate_response(200, "OFFLINE")
-    except CalledProcessError:
-        return generate_response(200, "OFFLINE")
-
-
-@app.route("/status_httpd", endpoint="status_httpd", methods=["GET"])
-def status_httpd():
-    try:
-        process_list=str(check_output("tasklist", shell=True))
-        if "httpd.exe" in process_list:
-            return generate_response(200, "ONLINE")
-        else:
-            return generate_response(200, "OFFLINE")
-    except CalledProcessError:
-        return generate_response(200, "OFFLINE")
-
-
-@app.route("/status_docker", endpoint="status_docker", methods=["GET"])
-def status_docker():
-    try:
-        process_list=str(check_output("tasklist", shell=True))
-        if "docker.exe" in process_list:
-            return generate_response(200, "ONLINE")
-        else:
-            return generate_response(200, "OFFLINE")
-    except CalledProcessError:
-        return generate_response(200, "OFFLINE")
-
-@app.route("/status_mouse", endpoint="status_mouse", methods=["GET"])
-def status_mouse():
-    try:
-        process_list=str(check_output("tasklist", shell=True))
-        if "Mobile Mouse.exe" in process_list:
-            return generate_response(200, "ONLINE")
-        else:
-            return generate_response(200, "OFFLINE")
-    except CalledProcessError:
-        return generate_response(200, "OFFLINE")
-
-@app.route("/status_gungame", endpoint="status_gungame", methods=["GET"])
-def status_gungame():
-    try:
-        process_list=str(check_output("tasklist", shell=True))
-        if "plutonium-bootstrapper-wi" in process_list:
-            return generate_response(200, "ONLINE")
-        else:
-            return generate_response(200, "OFFLINE")
-    except CalledProcessError:
-        return generate_response(200, "OFFLINE")
-
-@app.route("/restart_gungame", endpoint="restart_gungame", methods=["GET"])
-def restart_gungame():
-    try:
-        process_list=str(check_output("tasklist", shell=True)).split("\\r\\n")
-        for process in process_list:
-            if "plutonium-bootstrapper-wi" in process:
-                details = process.split()
-                pid = details[1]
-                result=str(check_output(f"Taskkill /F /PID {pid}", shell=True))
-                if "SUCCESS" in result:
-                    return generate_response(200, "RESTARTING")
-        else:
-            return generate_response(200, "ERROR")
+        output=str(check_output("Z:\Private\git\conecommons\scripts\plutonium\status.bat", shell=True))
+        return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
-
 
 
 if __name__ == "__main__":
