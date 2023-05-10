@@ -55,7 +55,8 @@ def plutonium_domination():
 @app.route("/git/deploy/theconeportal", endpoint="git_deploy_theconeportal", methods=["GET"])
 def git_deploy_theconeportal():
     try:
-        output=str(check_output("Z:\Private\conecommons\scripts\\theconeportal\update.bat", shell=True))
+        product = "theconeportal"
+        output=str(check_output(f"Z:\Private\conecommons\scripts\{product}\update.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
