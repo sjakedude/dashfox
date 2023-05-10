@@ -19,6 +19,10 @@ def generate_response(status, text):
 def connect():
     return "DashFox Backend API is ONLINE"
 
+# ================
+# Plutonium Routes
+# ================
+
 @app.route("/plutonium/status", endpoint="plutonium_status", methods=["GET"])
 def plutonium_status():
     try:
@@ -40,6 +44,36 @@ def plutonium_gungame():
 def plutonium_domination():
     try:
         output=str(check_output("Z:\Private\conecommons\scripts\plutonium\select_domination.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+# ==========
+# Git Routes
+# ==========
+
+@app.route("/git/deploy/theconeportal", endpoint="git_deploy_theconeportal", methods=["GET"])
+def git_deploy_theconeportal():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\theconeportal\update.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+
+@app.route("/git/deploy/conecommons", endpoint="git_deploy_conecommons", methods=["GET"])
+def git_deploy_conecommons():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\conecommons\update.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+
+@app.route("/git/deploy/dashfox", endpoint="git_deploy_dashfox", methods=["GET"])
+def git_deploy_dashfox():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\dashfox\update.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
