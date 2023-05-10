@@ -5,6 +5,7 @@ from flask import Response
 from datetime import datetime
 import json
 import os
+import subprocess
 from subprocess import check_output
 from subprocess import CalledProcessError
 
@@ -55,8 +56,7 @@ def plutonium_domination():
 @app.route("/git/deploy/theconeportal", endpoint="git_deploy_theconeportal", methods=["GET"])
 def git_deploy_theconeportal():
     try:
-        product = "theconeportal"
-        output=str(check_output(f"Z:\Private\conecommons\scripts\{product}\\update.bat", shell=True))
+        output=str(check_output("Z:\Private\conecommons\scripts\\theconeportal\\update.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
@@ -74,8 +74,9 @@ def git_deploy_conecommons():
 @app.route("/git/deploy/dashfox", endpoint="git_deploy_dashfox", methods=["GET"])
 def git_deploy_dashfox():
     try:
-        output=str(check_output("Z:\Private\conecommons\scripts\dashfox\\update.bat", shell=True))
-        return generate_response(200, output)
+        command = "Z:\Private\conecommons\scripts\dashfox\\update.bat"
+        subprocess.Popen(["cmd", "/c", command], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return generate_response(200, "RESTARTING API")
     except CalledProcessError:
         return generate_response(200, "ERROR")
 
