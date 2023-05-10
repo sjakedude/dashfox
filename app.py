@@ -56,7 +56,7 @@ def plutonium_domination():
 def git_deploy_theconeportal():
     try:
         product = "theconeportal"
-        output=str(check_output(f"Z:\Private\conecommons\scripts\{product}\update.bat", shell=True))
+        output=str(check_output(f"Z:\Private\conecommons\scripts\{product}\\update.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
@@ -65,7 +65,7 @@ def git_deploy_theconeportal():
 @app.route("/git/deploy/conecommons", endpoint="git_deploy_conecommons", methods=["GET"])
 def git_deploy_conecommons():
     try:
-        output=str(check_output("Z:\Private\conecommons\scripts\conecommons\update.bat", shell=True))
+        output=str(check_output("Z:\Private\conecommons\scripts\conecommons\\update.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
@@ -74,7 +74,7 @@ def git_deploy_conecommons():
 @app.route("/git/deploy/dashfox", endpoint="git_deploy_dashfox", methods=["GET"])
 def git_deploy_dashfox():
     try:
-        output=str(check_output("Z:\Private\conecommons\scripts\dashfox\update.bat", shell=True))
+        output=str(check_output("Z:\Private\conecommons\scripts\dashfox\\update.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
