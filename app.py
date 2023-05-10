@@ -22,7 +22,7 @@ def connect():
 @app.route("/plutonium/status", endpoint="plutonium_status", methods=["GET"])
 def plutonium_status():
     try:
-        output=str(check_output("Z:\Private\git\conecommons\scripts\plutonium\status.bat", shell=True))
+        output=str(check_output("Z:\Private\conecommons\scripts\plutonium\status.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
@@ -31,7 +31,7 @@ def plutonium_status():
 @app.route("/plutonium/gungame", endpoint="plutonium_gungame", methods=["GET"])
 def plutonium_gungame():
     try:
-        output=str(check_output("Z:\Private\git\conecommons\scripts\plutonium\select_gungame.bat", shell=True))
+        output=str(check_output("Z:\Private\conecommons\scripts\plutonium\select_gungame.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
@@ -39,7 +39,7 @@ def plutonium_gungame():
 @app.route("/plutonium/domination", endpoint="plutonium_domination", methods=["GET"])
 def plutonium_domination():
     try:
-        output=str(check_output("Z:\Private\git\conecommons\scripts\plutonium\select_domination.bat", shell=True))
+        output=str(check_output("Z:\Private\conecommons\scripts\plutonium\select_domination.bat", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
