@@ -28,5 +28,21 @@ def plutonium_status():
         return generate_response(200, "ERROR")
 
 
+@app.route("/plutonium/gungame", endpoint="plutonium_gungame", methods=["GET"])
+def plutonium_gungame():
+    try:
+        output=str(check_output("Z:\Private\git\conecommons\scripts\plutonium\select_gungame.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+@app.route("/plutonium/domination", endpoint="plutonium_domination", methods=["GET"])
+def plutonium_domination():
+    try:
+        output=str(check_output("Z:\Private\git\conecommons\scripts\plutonium\select_domination.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
 if __name__ == "__main__":
     app.run(host="192.168.0.219", port=5000, debug=True)
