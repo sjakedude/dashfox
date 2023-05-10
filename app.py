@@ -71,6 +71,15 @@ def git_deploy_conecommons():
         return generate_response(200, "ERROR")
 
 
+@app.route("/test", endpoint="test", methods=["GET"])
+def test():
+    try:
+        output=str(check_output("dir", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+
 @app.route("/git/deploy/dashfox", endpoint="git_deploy_dashfox", methods=["GET"])
 def git_deploy_dashfox():
     try:
