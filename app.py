@@ -105,7 +105,7 @@ def plutonium_gungame():
 @app.route("/minecraft/stop_ftb", endpoint="minecraft_stop_ftb", methods=["GET"])
 def plutonium_domination():
     try:
-        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\stop_minecraft_ftb_server.bat", shell=True))
+        output=str(check_output("powershell Z:\Private\conecommons\scripts\minecraft\stop_minecraft_ftb_server.ps1", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
@@ -121,7 +121,7 @@ def plutonium_gungame():
 @app.route("/minecraft/stop_latest", endpoint="minecraft_stop_latest", methods=["GET"])
 def plutonium_domination():
     try:
-        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\stop_minecraft_latest_server.bat", shell=True))
+        output=str(check_output("powershell Z:\Private\conecommons\scripts\minecraft\stop_minecraft_latest_server.ps1", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
