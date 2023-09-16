@@ -80,5 +80,51 @@ def git_deploy_dashfox():
     except CalledProcessError:
         return generate_response(200, "ERROR")
 
+
+# ================
+# Minecraft Routes
+# ================
+
+@app.route("/minecraft/status", endpoint="minecraft_status", methods=["GET"])
+def minecraft_status():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\get_running_servers.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+
+@app.route("/minecraft/start_ftb", endpoint="minecraft_start_ftb", methods=["GET"])
+def plutonium_gungame():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\start_minecraft_ftb_server.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+@app.route("/minecraft/stop_ftb", endpoint="minecraft_stop_ftb", methods=["GET"])
+def plutonium_domination():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\stop_minecraft_ftb_server.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+@app.route("/minecraft/start_latest", endpoint="minecraft_start_latest", methods=["GET"])
+def plutonium_gungame():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\start_minecraft_latest_server.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+@app.route("/minecraft/stop_latest", endpoint="minecraft_stop_latest", methods=["GET"])
+def plutonium_domination():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\stop_minecraft_latest_server.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
 if __name__ == "__main__":
     app.run(host="192.168.0.219", port=5000, debug=True)
