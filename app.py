@@ -88,7 +88,7 @@ def git_deploy_dashfox():
 @app.route("/minecraft/status", endpoint="minecraft_status", methods=["GET"])
 def minecraft_status():
     try:
-        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\get_running_servers.bat", shell=True))
+        output=str(check_output("powershell Z:\Private\conecommons\scripts\minecraft\get_running_servers.ps1", shell=True))
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
