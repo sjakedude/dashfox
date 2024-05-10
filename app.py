@@ -126,5 +126,21 @@ def plutonium_domination():
     except CalledProcessError:
         return generate_response(200, "ERROR")
 
+@app.route("/minecraft/start_beta", endpoint="minecraft_start_beta", methods=["GET"])
+def plutonium_gungame():
+    try:
+        output=str(check_output("Z:\Private\conecommons\scripts\minecraft\start_minecraft_beta_server.bat", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
+@app.route("/minecraft/stop_beta", endpoint="minecraft_stop_beta", methods=["GET"])
+def plutonium_domination():
+    try:
+        output=str(check_output("powershell Z:\Private\conecommons\scripts\minecraft\stop_minecraft_beta_server.ps1", shell=True))
+        return generate_response(200, output)
+    except CalledProcessError:
+        return generate_response(200, "ERROR")
+
 if __name__ == "__main__":
     app.run(host="192.168.0.219", port=5000, debug=True)
