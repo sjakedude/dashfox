@@ -22,7 +22,7 @@ class Syncer:
 
     def __init__(self, console_type):
         self.console_type = console_type
-        self.xboxs = [JASPER_RGH_IP, JASPER_RGH_IP]
+        self.xboxs = [JASPER_RGH_IP]
         self.metadata = {JASPER_RGH_IP: None, OFFICE_RGH_IP: None}
 
 
@@ -31,6 +31,13 @@ class Syncer:
         for token in tokens:
             print("TOKEN")
             print(token)
+        metadata_line = token[1]
+        date = token[1].split("Gears2Checkpoint")[0]
+        new_tokens = date.split(" ")
+        year = new_tokens[-1]
+        day = new_tokens[-2]
+        month = new_tokens[-3]
+        print(f"Last Updated: {month} {day} {year}")
         print("asdf")
 
 
