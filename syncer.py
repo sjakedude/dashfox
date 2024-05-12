@@ -2,6 +2,10 @@
 # and checks every save file metadata for when it was last modified and syncs the
 # save files to the other consoles so they are all up to date with the latest save
 
+import subprocess
+from subprocess import check_output
+from subprocess import CalledProcessError
+
 # Gamertag ID
 XBOX_PROFILE_ID = "E00000E4D88A136A"
 
