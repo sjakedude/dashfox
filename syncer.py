@@ -27,6 +27,9 @@ class Syncer:
 
 
     def get_last_modified(self, response):
+        tokens = response.split("\r\n")
+        for token in tokens:
+            print(token)
         print("asdf")
 
 
