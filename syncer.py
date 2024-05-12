@@ -76,4 +76,4 @@ class Syncer:
             )
             print(output)
             print(type(output))
-            last_modified = self.get_last_modified(output)
+            last_modified = self.get_last_modified(output, GAME_SAVE_NAME)
