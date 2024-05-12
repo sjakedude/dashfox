@@ -33,7 +33,11 @@ class Syncer:
             print(token)
         metadata_line = token[1]
         date = token[1].split("Gears2Checkpoint")[0]
+        print(date)
         new_tokens = date.split(" ")
+        for new_token in new_tokens:
+            print("new token")
+            print(new_token)
         year = new_tokens[-1]
         day = new_tokens[-2]
         month = new_tokens[-3]
