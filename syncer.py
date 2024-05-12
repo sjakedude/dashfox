@@ -5,13 +5,14 @@
 import subprocess
 from subprocess import check_output
 from subprocess import CalledProcessError
+from datetime import datetime
 
 # Gamertag ID
 XBOX_PROFILE_ID = "E00000E4D88A136A"
 
 # Console IP addresses
 JASPER_RGH_IP = "192.168.0.233"
-OFFICE_RGH_IP = "192.168.0.234:21"
+OFFICE_RGH_IP = "192.168.0.234"
 
 # Game Title ID and Save File Name
 GAME_TITLE_ID = "4D53082D"
@@ -23,8 +24,10 @@ class Syncer:
     def __init__(self, console_type):
         self.console_type = console_type
         self.xboxs = [JASPER_RGH_IP]
-        self.metadata = {JASPER_RGH_IP: None, OFFICE_RGH_IP: None}
-
+        self.metadata = {
+            JASPER_RGH_IP: {GAME_SAVE_NAME: None},
+            OFFICE_RGH_IP: {GAME_SAVE_NAME: None},
+        }
 
     def convert_month(self, month):
         if month == "Jan":
@@ -52,7 +55,6 @@ class Syncer:
         elif month == "Dec":
             return 12
 
-
     def get_last_modified(self, response, save_file_name):
         tokens = response.split("-rwxrwxrwx")
         metadata_line = tokens[1]
@@ -61,20 +63,49 @@ class Syncer:
         year = metadata_line_tokens[-2]
         day = metadata_line_tokens[-3]
         month = self.convert_month(metadata_line_tokens[-4])
-        print(f"Last Updated: {month}/{day}/{year}")
         return f"{month}/{day}/{year}"
 
+    def get_latest_save_file(self):
+        xbox_with_latest_save = None
+        latest_date = None
+        for xbox in self.metadata:
+            date = datetime.strptime(self.metadata[xbox][GAME_SAVE_NAME], "%m/%d/%Y")
+            if not latest_date:
+                latest_date = date
+            if latest_date < date:
+                xbox_with_latest_save = xbox
+        output = str(
+            check_output(
+                f"Z:\Private\conecommons\scripts\\rom_sync\\download_file.bat {xbox_with_latest_save} {XBOX_PROFILE_ID} {GAME_TITLE_ID} {GAME_SAVE_NAME}",
+                shell=True,
+            )
+        )
+        print(f"Latest save file downloaded from {xbox_with_latest_save}")
+        return xbox_with_latest_save
+
+    def upload_latest_save_file(self, xbox_with_latest_save):
+        for xbox in self.metadata:
+            if xbox != xbox_with_latest_save:
+                output = str(
+                    check_output(
+                        f"Z:\Private\conecommons\scripts\\rom_sync\\upload_file.bat {xbox} {XBOX_PROFILE_ID} {GAME_TITLE_ID} {GAME_SAVE_NAME}",
+                        shell=True,
+                    )
+                )
+                print(f"Latest save file uploaded to {xbox}")
 
     def sync_saves(self):
         # connect to each xbox and retrieve metadata for game
         for xbox in self.xboxs:
-            print("HI")
             output = str(
                 check_output(
                     f"Z:\Private\conecommons\scripts\\rom_sync\\retrieve_metadata.bat {xbox} {XBOX_PROFILE_ID} {GAME_TITLE_ID}",
                     shell=True,
                 )
             )
-            print(output)
-            print(type(output))
             last_modified = self.get_last_modified(output, GAME_SAVE_NAME)
+            self.metadata[xbox][GAME_SAVE_NAME] = last_modified
+        print(metadata)
+
+        xbox_with_latest_save = self.get_latest_save_file()
+        self.upload_latest_save_file(xbox_with_latest_save)
