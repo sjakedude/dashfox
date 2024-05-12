@@ -31,10 +31,10 @@ class Syncer:
         for token in tokens:
             print("TOKEN")
             print(token)
-        metadata_line = token[1]
+        metadata_line = tokens[1]
         print(metadata_line)
         print("BLAAAA")
-        date = token[1].split("Gears2Checkpoint")[0]
+        date = tokens[1].split("Gears2Checkpoint")[0]
         print(date)
         new_tokens = date.split(" ")
         for new_token in new_tokens:
