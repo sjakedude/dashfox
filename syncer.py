@@ -26,7 +26,7 @@ class Syncer:
         self.xboxs = [JASPER_RGH_IP]
         self.metadata = {
             JASPER_RGH_IP: {GAME_SAVE_NAME: None},
-            OFFICE_RGH_IP: {GAME_SAVE_NAME: None},
+            # OFFICE_RGH_IP: {GAME_SAVE_NAME: None},
         }
 
     def convert_month(self, month):
@@ -76,7 +76,7 @@ class Syncer:
                 xbox_with_latest_save = xbox
         output = str(
             check_output(
-                f"Z:\Private\conecommons\scripts\\rom_sync\\download_file.bat {xbox_with_latest_save} {XBOX_PROFILE_ID} {GAME_TITLE_ID} {GAME_SAVE_NAME}",
+                f"Z:\Private\conecommons\scripts\\rom_sync\\download_file.bat {xbox_with_latest_save} {XBOX_PROFILE_ID} {GAME_TITLE_ID} {GAME_SAVE_NAME} {self.console_type}",
                 shell=True,
             )
         )
@@ -88,7 +88,7 @@ class Syncer:
             if xbox != xbox_with_latest_save:
                 output = str(
                     check_output(
-                        f"Z:\Private\conecommons\scripts\\rom_sync\\upload_file.bat {xbox} {XBOX_PROFILE_ID} {GAME_TITLE_ID} {GAME_SAVE_NAME}",
+                        f"Z:\Private\conecommons\scripts\\rom_sync\\upload_file.bat {xbox} {XBOX_PROFILE_ID} {GAME_TITLE_ID} {GAME_SAVE_NAME} {self.console_type}",
                         shell=True,
                     )
                 )
@@ -108,4 +108,4 @@ class Syncer:
         print(metadata)
 
         xbox_with_latest_save = self.get_latest_save_file()
-        self.upload_latest_save_file(xbox_with_latest_save)
+        # self.upload_latest_save_file(xbox_with_latest_save)
