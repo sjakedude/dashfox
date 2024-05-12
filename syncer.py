@@ -8,7 +8,7 @@ from subprocess import CalledProcessError
 from datetime import datetime
 
 # Gamertag ID
-XBOX_PROFILE_ID = "E00000E4D88A136A"
+XBOX_PROFILE_ID = "E00000E4D88A136A" # sjakedude
 
 # Console IP addresses
 JASPER_RGH_IP = "192.168.0.233"
@@ -56,7 +56,11 @@ class Syncer:
             return 12
 
     def get_last_modified(self, response, save_file_name):
+        print("RESSPONSE")
+        print(response)
         tokens = response.split("-rwxrwxrwx")
+        print("tokens")
+        print(tokens)
         metadata_line = tokens[1]
         date = tokens[1].split(save_file_name)[0]
         metadata_line_tokens = date.split(" ")
