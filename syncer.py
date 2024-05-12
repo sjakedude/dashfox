@@ -15,7 +15,7 @@ JASPER_RGH_IP = "192.168.0.233"
 OFFICE_RGH_IP = "192.168.0.234"
 
 # Game Title ID and Save File Name
-GAME_TITLE_ID = "4D53082D"
+GAME_TITLE_ID = "425307D5"
 GAME_SAVE_NAME = "Gears2Checkpoint"
 
 
@@ -62,6 +62,7 @@ class Syncer:
         print("tokens")
         print(tokens)
         metadata_line = tokens[1]
+        return "bla"
         date = tokens[1].split(save_file_name)[0]
         metadata_line_tokens = date.split(" ")
         year = metadata_line_tokens[-2]
