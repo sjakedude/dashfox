@@ -226,15 +226,9 @@ def plutonium_domination():
 # ================
 
 
-@app.route("/syncer/rgh/sync_saves", endpoint="syncer_rgh_sync_saves", methods=["GET"])
+#@app.route("/syncer/rgh/sync_saves", endpoint="syncer_rgh_sync_saves", methods=["GET"])
 def plutonium_domination():
     try:
-        output = str(
-            check_output(
-                "powershell Z:\Private\conecommons\scripts\rom_sync\stop_minecraft_beta_server.ps1",
-                shell=True,
-            )
-        )
         syncer = Syncer("RGH")
         output = syncer.sync_saves()
         return generate_response(200, output)
