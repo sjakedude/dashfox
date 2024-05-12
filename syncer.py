@@ -26,28 +26,42 @@ class Syncer:
         self.metadata = {JASPER_RGH_IP: None, OFFICE_RGH_IP: None}
 
 
-    def get_last_modified(self, response):
+    def convert_month(month):
+        if month == "Jan":
+            return 1
+        elif month == "Feb":
+            return 2
+        elif month == "Mar":
+            return 3
+        elif month == "Apr":
+            return 4
+        elif month == "May":
+            return 5
+        elif month == "Jun":
+            return 6
+        elif month == "Jul":
+            return 7
+        elif month == "Aug":
+            return 8
+        elif month == "Sep":
+            return 9
+        elif month == "Oct":
+            return 10
+        elif month == "Nov":
+            return 11
+        elif month == "Dec":
+            return 12
+
+
+    def get_last_modified(self, response, save_file_name):
         tokens = response.split("-rwxrwxrwx")
-        for token in tokens:
-            print("TOKEN")
-            print(token)
         metadata_line = tokens[1]
-        print(metadata_line)
-        print("BLAAAA")
-        date = tokens[1].split("Gears2Checkpoint")[0]
-        print(date)
-        new_tokens = date.split(" ")
-        for new_token in new_tokens:
-            print("new token")
-            print(new_token)
-        year = new_tokens[-2]
-        day = new_tokens[-3]
-        month = new_tokens[-4]
-        print(f"year: {year}")
-        print(f"month: {month}")
-        print(f"day: {day}")
-        print(f"Last Updated: {month} {day} {year}")
-        print("asdf")
+        date = tokens[1].split(save_file_name)[0]
+        metadata_line_tokens = date.split(" ")
+        year = metadata_line_tokens[-2]
+        day = metadata_line_tokens[-3]
+        month = convert_month(metadata_line_tokens[-4])
+        print(f"Last Updated: {month}/{day}/{year}")
 
 
     def sync_saves(self):
