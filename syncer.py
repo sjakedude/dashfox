@@ -10,8 +10,8 @@ from subprocess import CalledProcessError
 XBOX_PROFILE_ID = "E00000E4D88A136A"
 
 # Console IP addresses
-JASPER_RGH_IP = "192.168.0.233"
-OFFICE_RGH_IP = "192.168.0.234"
+JASPER_RGH_IP = "192.168.0.233:21"
+OFFICE_RGH_IP = "192.168.0.234:21"
 
 # Game Title ID and Save File Name
 GAME_TITLE_ID = "4D53082D"
