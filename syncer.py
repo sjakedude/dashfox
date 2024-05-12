@@ -39,7 +39,7 @@ class Syncer:
             print("HI")
             output = str(
                 check_output(
-                    f"powershell Z:\Private\conecommons\scripts\\rom_sync\\retrieve_metadata.bat {xbox} {XBOX_PROFILE_ID} {GAME_TITLE_ID}",
+                    f"Z:\Private\conecommons\scripts\\rom_sync\\retrieve_metadata.bat {xbox} {XBOX_PROFILE_ID} {GAME_TITLE_ID}",
                     shell=True,
                 )
             )
