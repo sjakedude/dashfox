@@ -62,6 +62,7 @@ class Syncer:
         day = metadata_line_tokens[-3]
         month = convert_month(metadata_line_tokens[-4])
         print(f"Last Updated: {month}/{day}/{year}")
+        return f"{month}/{day}/{year}"
 
 
     def sync_saves(self):
