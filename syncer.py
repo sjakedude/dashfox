@@ -17,6 +17,7 @@ GAME_SAVE_NAME = "Gears2Checkpoint"
 class Syncer:
 
     def __init__(self, console_type):
+        self.console_type = console_type
         self.xboxs = [JASPER_RGH_IP, JASPER_RGH_IP]
         self.metadata = {JASPER_RGH_IP: None, OFFICE_RGH_IP: None}
 
