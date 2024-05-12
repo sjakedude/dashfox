@@ -26,7 +26,7 @@ class Syncer:
         self.metadata = {JASPER_RGH_IP: None, OFFICE_RGH_IP: None}
 
 
-    def convert_month(month):
+    def convert_month(self, month):
         if month == "Jan":
             return 1
         elif month == "Feb":
@@ -60,7 +60,7 @@ class Syncer:
         metadata_line_tokens = date.split(" ")
         year = metadata_line_tokens[-2]
         day = metadata_line_tokens[-3]
-        month = convert_month(metadata_line_tokens[-4])
+        month = self.convert_month(metadata_line_tokens[-4])
         print(f"Last Updated: {month}/{day}/{year}")
         return f"{month}/{day}/{year}"
 
