@@ -72,6 +72,7 @@ class Syncer:
             date = datetime.strptime(self.metadata[xbox][GAME_SAVE_NAME], "%m/%d/%Y")
             if not latest_date:
                 latest_date = date
+                xbox_with_latest_save = xbox
             if latest_date < date:
                 xbox_with_latest_save = xbox
         output = str(
