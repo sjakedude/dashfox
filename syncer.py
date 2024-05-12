@@ -40,7 +40,7 @@ class Syncer:
             print(new_token)
         year = new_tokens[-1]
         day = new_tokens[-2]
-        month = new_tokens[-3]
+        month = "bla"
         print(f"Last Updated: {month} {day} {year}")
         print("asdf")
 
