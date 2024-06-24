@@ -51,6 +51,9 @@ class Syncer:
 
 
     def get_last_modified(self, response):
+        print("RESPONSE IS")
+        print(response)
+        print("=====")
         lines = response.split("\n")
         files = []
         for line in lines:
