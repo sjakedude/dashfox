@@ -7,8 +7,8 @@ METADATA_RESPONSE_MULTIPLE_SAVE = "b'\r\nZ:\\Private\\dashfox>echo open 192.168.
 
 
 def test_get_last_modified():
-    syncer = Syncer("xbox_360")
+    syncer = Syncer("sjakedude", "gears_of_war_2")
     res = syncer.get_last_modified(METADATA_RESPONSE, "Gears2Checkpoint")
-    print(res)
+    # print(res)
 
 test_get_last_modified()

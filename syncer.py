@@ -3,6 +3,7 @@
 # save files to the other consoles so they are all up to date with the latest save
 
 import subprocess
+import json
 from subprocess import check_output
 from subprocess import CalledProcessError
 from datetime import datetime
@@ -19,15 +20,52 @@ GAME_TITLE_ID = "425307D5"
 GAME_SAVE_NAME = "Gears2Checkpoint"
 
 
+def read_json():
+    with open("xbox_config.json", 'r') as file:
+        data = json.load(file)
+    return data
+
+
 class Syncer:
 
-    def __init__(self, console_type):
-        self.console_type = console_type
-        self.xboxs = [JASPER_RGH_IP]
-        self.metadata = {
-            JASPER_RGH_IP: {GAME_SAVE_NAME: None},
-            # OFFICE_RGH_IP: {GAME_SAVE_NAME: None},
-        }
+    def __init__(self, profile, game_names):
+        self.config = read_json()
+        self.profile = self.verify_profile(profile)
+        self.game_names = self.verify_game_names(game_names)
+        self.xboxs = self.get_xbox_ips()
+        self.metadata = self.create_metadata_dict()
+
+
+    def verify_profile(self, profile):
+        try:
+            self.config["xbox_profiles"][profile]
+        except KeyError:
+            print(f"Profile {profile} not supported")
+
+
+    def verify_game_names(self, game_names):
+        games = game_names.split("|")
+        for game in games:
+            try:
+                self.config["xbox_games"][game]
+            except KeyError:
+                print(f"Game {game} not supported")
+        return games
+        
+
+    def create_metadata_dict(self):
+        metadata = {}
+        for xbox in self.xboxs:
+            metadata[xbox] = {}
+            for game_name in self.game_names:
+                metadata[xbox][game_name] = None
+        return metadata
+
+    def get_xbox_ips(self):
+        xboxs = []
+        for key in self.config["xbox_ips"]:
+            xboxs.append(self.config["xbox_ips"][key])
+        return xboxs
 
     def convert_month(self, month):
         if month == "Jan":
@@ -103,14 +141,15 @@ class Syncer:
     def sync_saves(self):
         # connect to each xbox and retrieve metadata for game
         for xbox in self.xboxs:
-            output = str(
-                check_output(
-                    f"Z:\Private\conecommons\scripts\\rom_sync\\retrieve_metadata.bat {xbox} {XBOX_PROFILE_ID} {GAME_TITLE_ID}",
-                    shell=True,
+            for game in self.game_names:
+                output = str(
+                    check_output(
+                        f"Z:\Private\conecommons\scripts\\rom_sync\\retrieve_metadata.bat {xbox} {self.profile} {self.config["xbox_games"][game]["title_id"]}",
+                        shell=True,
+                    )
                 )
-            )
-            last_modified = self.get_last_modified(output, GAME_SAVE_NAME)
-            self.metadata[xbox][GAME_SAVE_NAME] = last_modified
+                last_modified = self.get_last_modified(output, game)
+                self.metadata[xbox][game] = last_modified
         print(self.metadata)
 
         # xbox_with_latest_save = self.get_latest_save_file()
