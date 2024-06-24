@@ -51,7 +51,10 @@ class Syncer:
 
 
     def get_last_modified(self, response):
-        epoch_ts = response.split("date -r . +%s \r\n")[1].split("\r\nquit")[0]
+        print("RESPONSE IS")
+        print(response)
+        print("END RESPONSE")
+        epoch_ts = response.split("ls -ltra \r\n")[1].split("\r\nquit")[0]
         return epoch_ts
 
     def get_latest_save_file(self):
