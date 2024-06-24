@@ -26,6 +26,7 @@ class Syncer:
             self.config["xbox_profiles"][profile]
         except KeyError:
             print(f"Profile {profile} not supported")
+        return profile
 
 
     def verify_game(self, game):
@@ -33,6 +34,7 @@ class Syncer:
             self.config["xbox_games"][game]
         except KeyError:
             print(f"Game {game} not supported")
+        return game
         
 
     def create_metadata_dict(self):
