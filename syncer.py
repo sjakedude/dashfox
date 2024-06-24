@@ -3,6 +3,7 @@
 # save files to the other consoles so they are all up to date with the latest save
 
 import json
+import re
 from subprocess import check_output
 
 def read_json():
@@ -50,9 +51,31 @@ class Syncer:
 
 
     def get_last_modified(self, response):
-        print("RESPONSE IS")
-        print(response)
-        print("END RESPONSE")
+        lines = response.split("\n")
+        files = []
+        for line in lines:
+            if "-rwxrwxrwx" in line:
+                files.append(line)
+        print(files)
+        for file in files:
+            if ":" in file:
+                pattern = r'\b([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\b'
+                match = re.search(pattern, line)
+                if match:
+                    month, day, year = match.groups()
+                    print(f"Month: {month}, Day: {day}, Year: {year}")
+                else:
+                    print("No match found.")
+            else:
+                pattern = r'\b([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\b'
+                match = re.search(pattern, line)
+                if match:
+                    month, day, year = match.groups()
+                    print(f"Month: {month}, Day: {day}, Year: {year}")
+                else:
+                    print("No match found.")
+
+
         epoch_ts = response.split("ls -ltra \r\n")[1].split("\r\nquit")[0]
         return epoch_ts
 
