@@ -23,10 +23,9 @@ class Syncer:
 
     def verify_profile(self, profile):
         try:
-            self.config["xbox_profiles"][profile]
+            return self.config["xbox_profiles"][profile]
         except KeyError:
             print(f"Profile {profile} not supported")
-        return profile
 
 
     def verify_game(self, game):
