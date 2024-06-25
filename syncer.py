@@ -40,7 +40,7 @@ class Syncer:
     def create_metadata_dict(self):
         metadata = {}
         for xbox in self.xboxs:
-            metadata[xbox] = {self.game: None}
+            metadata[xbox] = {self.game: {"last_updated": None, "file_names": []}}
         return metadata
 
     def get_xbox_ips(self):
@@ -57,11 +57,13 @@ class Syncer:
             if "-rwxrwxrwx" in line:
                 files.append(line.replace("\xa0", " "))
         timestamps = []
+        file_names = []
         for file in files:
             tokens = re.split(r"\s+", file)
             month = tokens[5]
             day = tokens[6]
             year_or_time = tokens[7]
+            file_name = tokens[8]
             if ":" in year_or_time:
                 timestamp_str = f"{month} {day} {datetime.now().year} {year_or_time}"
                 timestamp_format = "%b %d %Y %H:%M"
@@ -70,13 +72,14 @@ class Syncer:
                 timestamp_format = "%b %d %Y"
             parsed_timestamp = datetime.strptime(timestamp_str, timestamp_format)
             timestamps.append(parsed_timestamp)    
+            file_names.append(tokens[8])
         return max(timestamps)
 
     def get_latest_save_files(self):
         xbox_with_latest_save = None
         latest_date = None
         for xbox in self.metadata:
-            date = self.metadata[xbox][self.game]
+            date = self.metadata[xbox][self.game]["last_updated"]
             if not latest_date:
                 latest_date = date
                 xbox_with_latest_save = xbox
@@ -107,8 +110,9 @@ class Syncer:
                     shell=True,
                 )
             )
-            last_modified = self.get_max_last_modified(output)
-            self.metadata[xbox][self.game] = last_modified
+            last_modified, file_names = self.get_max_last_modified(output)
+            self.metadata[xbox][self.game]["last_updated"] = last_modified
+            self.metadata[xbox][self.game]["file_names"] = file_names
         print(self.metadata)
 
         # xbox_with_latest_save = self.get_latest_save_files()
