@@ -63,7 +63,7 @@ class Syncer:
             month = tokens[5]
             day = tokens[6]
             year_or_time = tokens[7]
-            file_name = tokens[8]
+            file_name = tokens[8].replace("\\r", "")
             if ":" in year_or_time:
                 timestamp_str = f"{month} {day} {datetime.now().year} {year_or_time}"
                 timestamp_format = "%b %d %Y %H:%M"
