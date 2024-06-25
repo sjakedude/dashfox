@@ -52,6 +52,7 @@ class Syncer:
 
     def get_max_last_modified(self, response):
         print("IN get max last modified")
+        print(type(response))
         lines = response.split("\n")
         files = []
         for line in lines:
