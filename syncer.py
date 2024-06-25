@@ -62,12 +62,14 @@ class Syncer:
         timestamps = []
         file_names = []
         for file in files:
-            tokens = re.split(r"\s+", file)
-            month = tokens[5]
-            day = tokens[6]
-            year_or_time = tokens[7]
+            print(file)
+            tokens = file.split(" ")
+            print(tokens)
+            month = tokens[13]
+            day = tokens[14]
+            year_or_time = tokens[15]
             filename = ""
-            for file_name_part in tokens[8::]:
+            for file_name_part in tokens[16::]:
                 filename = filename + file_name_part + " "
             filename =  filename.strip().replace("\\r", "")
             if ":" in year_or_time:
