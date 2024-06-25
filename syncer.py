@@ -118,5 +118,5 @@ class Syncer:
             self.metadata[xbox][self.game]["file_names"] = file_names
         print(self.metadata)
 
-        xbox_with_latest_save = self.get_latest_save_files()
+        # xbox_with_latest_save = self.get_latest_save_files()
         # self.upload_latest_save_file(xbox_with_latest_save)
