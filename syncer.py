@@ -73,7 +73,7 @@ class Syncer:
             parsed_timestamp = datetime.strptime(timestamp_str, timestamp_format)
             timestamps.append(parsed_timestamp)    
             file_names.append(tokens[8])
-        return max(timestamps)
+        return max(timestamps), file_names
 
     def get_latest_save_files(self):
         xbox_with_latest_save = None
