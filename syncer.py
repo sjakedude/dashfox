@@ -60,6 +60,7 @@ class Syncer:
         file_names = []
         for file in files:
             tokens = re.split(r"\s+", file)
+            print(tokens)
             month = tokens[5]
             day = tokens[6]
             year_or_time = tokens[7]
