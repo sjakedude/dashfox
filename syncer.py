@@ -51,14 +51,18 @@ class Syncer:
 
 
     def get_max_last_modified(self, response):
+        print("IN get max last modified")
         lines = response.split("\n")
         files = []
         for line in lines:
             if "-rwxrwxrwx" in line:
                 files.append(line.replace("\xa0", " "))
         timestamps = []
+        print("about to loop")
         for file in files:
+            print("file")
             print(file)
+            print("end file")
             tokens = re.split(r"\s+", file)
             month = tokens[5]
             day = tokens[6]
