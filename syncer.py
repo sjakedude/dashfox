@@ -50,6 +50,9 @@ class Syncer:
         return xboxs
 
 
+        
+
+
     def get_max_last_modified(self, response):
         lines = response.split("\\n")
         files = []
@@ -60,11 +63,13 @@ class Syncer:
         file_names = []
         for file in files:
             tokens = re.split(r"\s+", file)
-            print(tokens)
             month = tokens[5]
             day = tokens[6]
             year_or_time = tokens[7]
-            file_name = tokens[8].replace("\\r", "")
+            filename = ""
+            for file_name_part in tokens[8::]:
+                filename = filename + file_name_part + " "
+            filename =  filename.strip().replace("\\r", "")
             if ":" in year_or_time:
                 timestamp_str = f"{month} {day} {datetime.now().year} {year_or_time}"
                 timestamp_format = "%b %d %Y %H:%M"
@@ -73,7 +78,7 @@ class Syncer:
                 timestamp_format = "%b %d %Y"
             parsed_timestamp = datetime.strptime(timestamp_str, timestamp_format)
             timestamps.append(parsed_timestamp)    
-            file_names.append(file_name)
+            file_names.append(filename)
         return max(timestamps), file_names
 
     def get_latest_save_files(self):
