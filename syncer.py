@@ -51,17 +51,12 @@ class Syncer:
 
 
     def get_max_last_modified(self, response):
-        print("IN get max last modified")
-        print(type(response))
-        lines = response.decode("utf-8").split("\n")
+        lines = response.split("\\n")
         files = []
         for line in lines:
-            print("LINE IS")
-            print(line)
             if "-rwxrwxrwx" in line:
                 files.append(line.replace("\xa0", " "))
         timestamps = []
-        print("about to loop")
         for file in files:
             print("file")
             print(file)
