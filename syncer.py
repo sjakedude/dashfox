@@ -72,7 +72,7 @@ class Syncer:
                 timestamp_format = "%b %d %Y"
             parsed_timestamp = datetime.strptime(timestamp_str, timestamp_format)
             timestamps.append(parsed_timestamp)    
-            file_names.append(tokens[8])
+            file_names.append(file_name)
         return max(timestamps), file_names
 
     def get_latest_save_files(self):
