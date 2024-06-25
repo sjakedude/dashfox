@@ -5,12 +5,12 @@
 import json
 import re
 from subprocess import check_output
+from datetime import datetime
 
 def read_json():
     with open("xbox_config.json", 'r') as file:
         data = json.load(file)
     return data
-
 
 class Syncer:
 
@@ -50,39 +50,30 @@ class Syncer:
         return xboxs
 
 
-    def get_last_modified(self, response):
-        print("RESPONSE IS")
-        print(response)
-        print("=====")
+    def get_max_last_modified(self, response):
         lines = response.split("\n")
         files = []
         for line in lines:
             if "-rwxrwxrwx" in line:
-                files.append(line)
-        print(files)
+                files.append(line.replace("\xa0", " "))
+        timestamps = []
         for file in files:
-            if ":" in file:
-                pattern = r'\b([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\b'
-                match = re.search(pattern, line)
-                if match:
-                    month, day, year = match.groups()
-                    print(f"Month: {month}, Day: {day}, Year: {year}")
-                else:
-                    print("No match found.")
+            print(file)
+            tokens = re.split(r"\s+", file)
+            month = tokens[5]
+            day = tokens[6]
+            year_or_time = tokens[7]
+            if ":" in year_or_time:
+                timestamp_str = f"{month} {day} {datetime.now().year} {year_or_time}"
+                timestamp_format = "%b %d %Y %H:%M"
             else:
-                pattern = r'\b([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\b'
-                match = re.search(pattern, line)
-                if match:
-                    month, day, year = match.groups()
-                    print(f"Month: {month}, Day: {day}, Year: {year}")
-                else:
-                    print("No match found.")
+                timestamp_str = f"{month} {day} {year_or_time}"
+                timestamp_format = "%b %d %Y"
+            parsed_timestamp = datetime.strptime(timestamp_str, timestamp_format)
+            timestamps.append(parsed_timestamp)
+        return max(timestamps)
 
-
-        epoch_ts = response.split("ls -ltra \r\n")[1].split("\r\nquit")[0]
-        return epoch_ts
-
-    def get_latest_save_file(self):
+    def get_latest_save_files(self):
         xbox_with_latest_save = None
         latest_date = None
         for xbox in self.metadata:
@@ -117,9 +108,9 @@ class Syncer:
                     shell=True,
                 )
             )
-            last_modified = self.get_last_modified(output)
+            last_modified = self.get_max_last_modified(output)
             self.metadata[xbox][self.game] = last_modified
         print(self.metadata)
 
-        # xbox_with_latest_save = self.get_latest_save_file()
+        # xbox_with_latest_save = self.get_latest_save_files()
         # self.upload_latest_save_file(xbox_with_latest_save)
