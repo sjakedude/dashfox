@@ -55,6 +55,8 @@ class Syncer:
         lines = response.split("\n")
         files = []
         for line in lines:
+            print("LINE IS")
+            print(line)
             if "-rwxrwxrwx" in line:
                 files.append(line.replace("\xa0", " "))
         timestamps = []
