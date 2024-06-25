@@ -85,11 +85,12 @@ class Syncer:
                 xbox_with_latest_save = xbox
             if latest_date < date:
                 xbox_with_latest_save = xbox
-        check_output(
-            f"Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_file.bat {xbox_with_latest_save} {self.profile} {self.config['xbox_games'][self.game]['title_id']}",
-            shell=True,
-        )
-        print(f"Latest save file downloaded from {xbox_with_latest_save}")
+        for file in self.metadata[xbox][self.game]["file_names"]:
+            check_output(
+                f"Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_file.bat {xbox_with_latest_save} {self.profile} {self.config['xbox_games'][self.game]['title_id']} {file}",
+                shell=True,
+            )
+            print(f"Latest save file {file} downloaded from {xbox_with_latest_save}")
         return xbox_with_latest_save
 
     def upload_latest_save_file(self, xbox_with_latest_save):
