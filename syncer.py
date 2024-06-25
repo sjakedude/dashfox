@@ -6,6 +6,7 @@ import json
 import re
 from subprocess import check_output
 from datetime import datetime
+import time
 
 def read_json():
     with open("xbox_config.json", 'r') as file:
@@ -101,6 +102,7 @@ class Syncer:
                 shell=True,
             )
             print(f"Latest save file {file} downloaded from {xbox_with_latest_save}")
+            time.sleep(10)
         return xbox_with_latest_save
 
     def upload_latest_save_file(self, xbox_with_latest_save):
