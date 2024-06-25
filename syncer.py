@@ -58,9 +58,6 @@ class Syncer:
                 files.append(line.replace("\xa0", " "))
         timestamps = []
         for file in files:
-            print("file")
-            print(file)
-            print("end file")
             tokens = re.split(r"\s+", file)
             month = tokens[5]
             day = tokens[6]
@@ -72,7 +69,7 @@ class Syncer:
                 timestamp_str = f"{month} {day} {year_or_time}"
                 timestamp_format = "%b %d %Y"
             parsed_timestamp = datetime.strptime(timestamp_str, timestamp_format)
-            timestamps.append(parsed_timestamp)
+            timestamps.append(parsed_timestamp)    
         return max(timestamps)
 
     def get_latest_save_files(self):

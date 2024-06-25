@@ -1,8 +1,6 @@
 {
     "xbox_ips": {
-        "Jasper": "192.168.0.233",
-        "Office": "192.168.0.234",
-        "Barn": "192.168.0.235"
+        "Jasper": "192.168.0.233"
     },
     "xbox_profiles": {
         "sjakedude": "E00000E4D88A136A"
