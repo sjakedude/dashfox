@@ -230,7 +230,8 @@ def plutonium_domination():
 @app.route("/syncer/rgh/sync_saves", endpoint="syncer_rgh_sync_saves", methods=["GET"])
 def sync_xbox_360_saves():
     try:
-        syncer = Syncer("sjakedude", "fallout_3")
+        game = request.args.get("game")
+        syncer = Syncer("sjakedude", game)
         output = syncer.sync_saves()
         return generate_response(200, output)
     except CalledProcessError:
