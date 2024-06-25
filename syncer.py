@@ -98,11 +98,10 @@ class Syncer:
         for file in self.metadata[xbox][self.game]["file_names"]:
             print(f"Downloading {file} from xbox")
             check_output(
-                f"Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_file.bat {xbox_with_latest_save} {self.profile} {self.config['xbox_games'][self.game]['title_id']} {file}",
+                f"Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_file.bat {xbox_with_latest_save} {self.profile} {self.config['xbox_games'][self.game]['title_id']} \"{file}\"",
                 shell=True,
             )
             print(f"Latest save file {file} downloaded from {xbox_with_latest_save}")
-            time.sleep(10)
         return xbox_with_latest_save
 
     def upload_latest_save_file(self, xbox_with_latest_save):
