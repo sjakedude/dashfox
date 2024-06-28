@@ -1,18 +1,17 @@
 {
     "xbox_ips": {
-        "Jasper": "192.168.0.233"
+        "Jasper": "192.168.0.233",
+        "Office": "192.168.0.200"
     },
     "xbox_profiles": {
         "sjakedude": "E00000E4D88A136A"
     },
     "xbox_games": {
         "gears_of_war_2": {
-            "title_id": "4D53082D",
-            "gamesave_name": "Gears2Checkpoint"
+            "title_id": "4D53082D"
         },
         "fallout_3": {
-            "title_id": "425307D5",
-            "gamesave_name": "*"
+            "title_id": "425307D5"
         }
     }
 }
