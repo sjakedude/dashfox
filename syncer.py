@@ -113,14 +113,20 @@ class Syncer:
             print(f"Latest save file {file} downloaded from {xbox_with_latest_save}")
         return xbox_with_latest_save
 
-    def upload_latest_save_file(self, xbox_with_latest_save):
+    def upload_latest_save_files(self, xbox_with_latest_save):
         for xbox in self.metadata:
             if xbox != xbox_with_latest_save:
+                for file_name in self.metadata[xbox][self.game]["file_names"]:
+                    check_output(
+                        f"Z:\Private\conecommons\scripts\\rom_sync\\delete_xbox_saves.bat {xbox} {self.profile} {self.config['xbox_games'][self.game]['title_id']} {file_name}",
+                        shell=True,
+                    )
+                    print(f"Deleted save file {file_name} on {xbox}")
                 check_output(
                     f"Z:\Private\conecommons\scripts\\rom_sync\\upload_xbox_file.bat {xbox} {self.profile} {self.config['xbox_games'][self.game]['title_id']}",
                     shell=True,
                 )
-                print(f"Latest save file uploaded to {xbox}")
+                print(f"Latest save files uploaded to {xbox}")
 
     def sync_saves(self):
         # connect to each xbox and retrieve metadata for game
@@ -137,4 +143,5 @@ class Syncer:
         print(self.metadata)
 
         xbox_with_latest_save = self.get_latest_save_files()
-        # self.upload_latest_save_file(xbox_with_latest_save)
+        self.upload_latest_save_files(xbox_with_latest_save)
+        print("Saves Synced!")
