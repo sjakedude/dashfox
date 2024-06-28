@@ -118,14 +118,14 @@ class Syncer:
             if xbox != xbox_with_latest_save:
                 for file_name in self.metadata[xbox][self.game]["file_names"]:
                     check_output(
-                        f"Z:\Private\conecommons\scripts\\rom_sync\\delete_xbox_saves.bat {xbox} {self.profile} {self.config['xbox_games'][self.game]['title_id']} {file_name}",
+                        f"Z:\Private\conecommons\scripts\\rom_sync\\delete_xbox_saves.bat {xbox} {self.profile} {self.config['xbox_games'][self.game]['title_id']} \"{file_name}\"",
                         shell=True,
                     )
                     print(f"Deleted save file {file_name} on {xbox}")
                 print("About to upload new files to xbox")
                 for file_name in self.metadata[xbox_with_latest_save][self.game]["file_names"]:
                     check_output(
-                        f"Z:\Private\conecommons\scripts\\rom_sync\\upload_xbox_file.bat {xbox} {self.profile} {self.config['xbox_games'][self.game]['title_id']} {file_name}",
+                        f"Z:\Private\conecommons\scripts\\rom_sync\\upload_xbox_file.bat {xbox} {self.profile} {self.config['xbox_games'][self.game]['title_id']} \"{file_name}\"",
                         shell=True,
                     )
                     print(f"Latest save file {file_name} uploaded to {xbox}")
