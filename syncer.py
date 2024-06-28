@@ -84,6 +84,13 @@ class Syncer:
             file_names.append(filename)
         return max(timestamps), file_names
 
+    def purge_old_saves(self):
+        check_output(
+                f"Z:\Private\conecommons\scripts\\rom_sync\\purge_old_saves.bat {self.profile} {self.config['xbox_games'][self.game]['title_id']}",
+                shell=True,
+            )
+        print("Old saves deleted from NAS")
+
     def get_latest_save_files(self):
         xbox_with_latest_save = None
         latest_date = None
@@ -95,6 +102,8 @@ class Syncer:
             if latest_date < date:
                 xbox_with_latest_save = xbox
         print(f"Xbox with latest timestamp determined as: {xbox_with_latest_save}")
+        print("Deleting old saves")
+        self.purge_old_saves()
         for file in self.metadata[xbox][self.game]["file_names"]:
             print(f"Downloading {file} from xbox")
             check_output(
