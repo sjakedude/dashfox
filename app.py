@@ -112,7 +112,7 @@ def git_deploy_dashfox():
         subprocess.Popen(
             ["cmd", "/c", command], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
-        return generate_response(200, "RESTARTING API")
+        return generate_response(200, "RESTARTING API - BLA")
     except CalledProcessError:
         return generate_response(200, "ERROR")
 
