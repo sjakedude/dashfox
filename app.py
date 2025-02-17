@@ -232,6 +232,8 @@ def sync_xbox_360_saves():
     try:
         syncer = Syncer()
         output = syncer.query_all()
+        print("FTP DUMP")
+        print(output)
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
