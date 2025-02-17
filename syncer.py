@@ -108,7 +108,7 @@ class Syncer:
                                 shell=True,
                             )
                         )
-                     files_dict = parse_filenames_and_dates(output)
+                    files_dict = parse_filenames_and_dates(output)
                     if files_dict != {}:
                         master[xbox][profile][game] = files_dict
                 if master[xbox][profile] == {}:
