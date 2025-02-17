@@ -238,6 +238,8 @@ def sync_xbox_360_saves():
         print("FTP Dump")
         print(ftp_dump)
         ftp_instructions = generate_ftp_instructions(ftp_dump)
+        print("FTP Instructions")
+        print(ftp_instructions)
         syncer.purge_old_saves()
         syncer.create_directories_on_nas()
         handle_ftp_instructions(syncer, ftp_instructions)
