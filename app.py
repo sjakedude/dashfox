@@ -10,7 +10,7 @@ from subprocess import check_output
 from subprocess import CalledProcessError
 from syncer import Syncer
 from syncer import generate_ftp_instructions
-
+from syncer import handle_ftp_instructions
 
 app = Flask(__name__)
 
@@ -236,6 +236,7 @@ def sync_xbox_360_saves():
         ftp_dump = syncer.query_all()
         ftp_instructions = generate_ftp_instructions(ftp_dump)
         syncer.purge_old_saves()
+        handle_ftp_instructions(syncer, ftp_instructions)
         return generate_response(200, ftp_instructions)
     except CalledProcessError:
         return generate_response(200, "ERROR")
