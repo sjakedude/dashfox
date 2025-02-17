@@ -109,8 +109,6 @@ class Syncer:
                             )
                         )
                     files_dict = parse_filenames_and_dates(output)
-                    print("FILES DICT")
-                    print(files_dict)
                     if files_dict != {}:
                         master[xbox][profile][game] = files_dict
                 if master[xbox][profile] == {}:
@@ -120,10 +118,8 @@ class Syncer:
 
 def parse_filenames_and_dates(output):
     files = {}
-    # trimmed_output = output.split("Not logged in\\r\\r\\nuser xboxftp xboxftp")[1]
     trimmed_output = output.split("Opening connection")[1]
     trimmed_output = trimmed_output.split("Transfer complete")[0]
-    print(trimmed_output)
     for token in trimmed_output.split("-rwxrwxrwx"):
         line = token.split()
         if line[0] == "1" and line[1] == "root" and line[2] == "root":
