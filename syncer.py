@@ -59,7 +59,7 @@ class Syncer:
         print(f"Latest save file {save} downloaded from {xbox}")
 
     def upload_save_file(self, xbox, profile, title_id, save):
-        print("About to upload new files to xbox")
+        print(f"About to upload {profile}/{title_id}/{save} files to {xbox}")
         check_output(
             f'Z:\Private\conecommons\scripts\\rom_sync\\upload_xbox_file.bat {xbox} {profile} {title_id} "{save}"',
             shell=True,
@@ -84,6 +84,14 @@ class Syncer:
                     shell=True,
                 )
                 print(f"Created {profile}/{title_id}/00000001 on NAS")
+
+    def create_directory_on_xbox(self, xbox, profile, title_id):
+        print(f"Creating {profile}/{title_id}/00000001 on {xbox}")
+        check_output(
+            f"Z:\Private\conecommons\scripts\\rom_sync\\create_directory_on_xbox.bat {xbox} {profile} {title_id}",
+            shell=True,
+        )
+        print(f"Created {profile}/{title_id}/00000001 on {xbox}")
 
     def download_profile_directory(self, xbox, profile):
 
@@ -287,4 +295,5 @@ def handle_ftp_instructions(syncer, instructions):
         syncer.download_save_file(
             ftp_instruction["source_ip"], profile, title_id, file_name
         )
-        # syncer.upload_save_file(ftp_instruction["destination_ip"], profile, title_id, file_name)
+        syncer.create_directory_on_xbox(ftp_instruction["destination_ip"], profile, title_id)
+        syncer.upload_save_file(ftp_instruction["destination_ip"], profile, title_id, file_name)
