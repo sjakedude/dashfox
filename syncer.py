@@ -271,21 +271,19 @@ def handle_ftp_instructions(syncer, instructions):
             title_id = path_parts[1]
             file_name = path_parts[2]
             syncer.download_save_file(
-                syncer, ftp_instruction["source_ip"], profile, title_id, file_name
+                ftp_instruction["source_ip"], profile, title_id, file_name
             )
-            # syncer.upload_save_file(syncer, ftp_instruction["destination_ip"], profile, title_id, file_name)
+            # syncer.upload_save_file(ftp_instruction["destination_ip"], profile, title_id, file_name)
         elif len(path_parts) == 2:
             # Entire title_id missing
             profile = path_parts[0]
             title_id = path_parts[1]
             syncer.download_title_id_directory(
-                syncer, ftp_instruction["source_ip"], profile, title_id
+                ftp_instruction["source_ip"], profile, title_id
             )
-            # syncer.upload_title_id_directory(syncer, ftp_instruction["destination_ip"], profile, title_id)
+            # syncer.upload_title_id_directory(ftp_instruction["destination_ip"], profile, title_id)
         elif len(path_parts) == 1:
             # Entire profile missing
             profile = path_parts[0]
-            syncer.download_profile_directory(
-                syncer, ftp_instruction["source_ip"], profile
-            )
-            # syncer.upload_profile_directory(syncer, ftp_instruction["destination_ip"], profile)
+            syncer.download_profile_directory(ftp_instruction["source_ip"], profile)
+            # syncer.upload_profile_directory(ftp_instruction["destination_ip"], profile)

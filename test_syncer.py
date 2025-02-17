@@ -5,6 +5,7 @@ from mongo_client import ConeMongoClient
 from helpers import read_json
 import json
 
+
 def test_get_max_last_modified():
     syncer = Syncer()
     ftp_dump = syncer.query_all()
