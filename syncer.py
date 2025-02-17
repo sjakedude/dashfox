@@ -204,7 +204,7 @@ def generate_ftp_instructions(ftp_dump):
                                             not in latest_map[profile][title_id].keys()
                                         ):
                                             latest_map[profile][title_id][save_file] = (
-                                                ftp_dump[other_xbox_ip][profile][
+                                                ftp_dump[xbox_ip][profile][
                                                     title_id
                                                 ][save_file]["last_modified_epoch"],
                                                 xbox_ip,
