@@ -10,7 +10,7 @@ import time
 from helpers import read_json
 from helpers import get_month_from_string
 
-ENV = "local"
+ENV = "prod"
 
 
 class Syncer:
@@ -42,28 +42,47 @@ class Syncer:
             "5841128F",
         ]
 
-    def purge_old_saves(self, profile, title_id):
+    def purge_old_saves(self):
         check_output(
-            f"Z:\Private\conecommons\scripts\\rom_sync\\purge_old_saves.bat {profile} {title_id}",
+            f"Z:\Private\conecommons\scripts\\rom_sync\\purge_old_saves.bat",
             shell=True,
         )
         print("Old saves deleted from NAS")
 
-    def download_save_file(self, xbox, title_id, profile, save):
-        print(f"Downloading {file} from xbox")
+    def download_save_file(self, xbox, profile, title_id, save):
+
+        print(f"Downloading {save} from {xbox}")
         check_output(
             f'Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_file.bat {xbox} {profile} {title_id} "{save}"',
             shell=True,
         )
-        print(f"Latest save file {file} downloaded from {xbox_with_latest_save}")
+        print(f"Latest save file {save} downloaded from {xbox}")
 
-    def upload_save_file(self, xbox, profile, save):
+    def upload_save_file(self, xbox, profile, title_id, save):
         print("About to upload new files to xbox")
         check_output(
             f'Z:\Private\conecommons\scripts\\rom_sync\\upload_xbox_file.bat {xbox} {profile} {title_id} "{save}"',
             shell=True,
         )
-        print(f"Latest save file {file_name} uploaded to {xbox}")
+        print(f"Latest save file {save} uploaded to {xbox}")
+
+    def download_title_id_directory(self, xbox, profile, title_id):
+
+        print(f"Downloading {profile}/{title_id} from {xbox}")
+        check_output(
+            f'Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_title_id.bat {xbox} {profile} {title_id}',
+            shell=True,
+        )
+        print(f"{profile}/{title_id} downloaded from {xbox}")
+
+    def download_profile_directory(self, xbox, profile):
+
+        print(f"Downloading {profile} from {xbox}")
+        check_output(
+            f'Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_profile.bat {xbox} {profile}',
+            shell=True,
+        )
+        print(f"{profile} downloaded from {xbox}")
 
     def query_all(self):
         master = {}
@@ -72,8 +91,9 @@ class Syncer:
         for xbox in self.xboxs:
             master[xbox] = {}
             for profile in self.profiles:
+                master[xbox][profile] = {}
                 for game in self.games:
-
+                    output = None
                     if ENV == "local":
                         output = str(
                             check_output(
@@ -89,47 +109,46 @@ class Syncer:
                             )
                         )
                     files_dict = parse_filenames_and_dates(output)
-                    if files_dict:
-                        master[xbox][profile] = {game: files_dict}
+                    if files_dict != {}:
+                        master[xbox][profile][game] = files_dict
+                if master[xbox][profile] == {}:
+                    del master[xbox][profile]
         return master
 
 
 def parse_filenames_and_dates(output):
     files = {}
-    try:
-        trimmed_output = output.split("Not logged in\\r\\r\\nuser xboxftp xboxftp")[1]
-        trimmed_output = trimmed_output.split("\\r\\nquit")[0]
-        for token in trimmed_output.split("-rwxrwxrwx"):
-            line = token.split()
-            if line[0] == "1" and line[1] == "root" and line[2] == "root":
-                # its a file
-                size = line[3]
-                month = line[4]
-                day = line[5]
-                year = line[6]
-                time = line[6]
-                if ":" in year:
-                    year = datetime.now().year
-                if ":" not in time:
-                    time = "00:00"
-                date_obj = datetime(
-                    year,
-                    get_month_from_string(month),
-                    day,
-                    time.split(":")[0],
-                    time.split(":")[0],
-                    0,
-                )
-                last_modified_epoch = int(date_obj.timestamp())
-                filename = token.split(f"{month} {day} {line[6]} ")[1]
-                filename = filename.replace("\\r\\n", "")
-                files[filename] = {
-                    "last_modified": f"{month} {day} {year} {time}",
-                    "last_modified_epoch": last_modified_epoch,
-                    "size": size,
-                }
-    except Exception:
-        return None
+    trimmed_output = output.split("Not logged in\\r\\r\\nuser xboxftp xboxftp")[1]
+    trimmed_output = trimmed_output.split("\\r\\nquit")[0]
+    for token in trimmed_output.split("-rwxrwxrwx"):
+        line = token.split()
+        if line[0] == "1" and line[1] == "root" and line[2] == "root":
+            # its a file
+            size = line[3]
+            month = line[4]
+            day = line[5]
+            year = line[6]
+            time = line[6]
+            if ":" in year:
+                year = datetime.now().year
+            if ":" not in time:
+                time = "00:00"
+            date_obj = datetime(
+                int(year),
+                get_month_from_string(month),
+                int(day),
+                int(time.split(":")[0]),
+                int(time.split(":")[0]),
+                0,
+            )
+            last_modified_epoch = int(date_obj.timestamp())
+            filename = token.split(f"{month} {day} {line[6]} ")[1]
+            filename = filename.replace("\\r\\n", "")
+            files[filename] = {
+                "last_modified": f"{month} {day} {year} {time}",
+                "last_modified_epoch": last_modified_epoch,
+                "size": size,
+            }
     return files
 
 
@@ -166,13 +185,12 @@ def generate_ftp_instructions(ftp_dump):
                                             not in latest_map[profile][title_id].keys()
                                         ):
                                             latest_map[profile][title_id][save_file] = (
-                                                tuple(
-                                                    ftp_dump[other_xbox_ip][profile][
-                                                        title_id
-                                                    ]["last_modified_epoch"],
-                                                    xbox_ip,
-                                                )
+                                                ftp_dump[other_xbox_ip][profile][
+                                                    title_id
+                                                ]["last_modified_epoch"],
+                                                xbox_ip,
                                             )
+
                                         if ftp_dump[other_xbox_ip][profile][
                                             title_id
                                         ].get(save_file):
@@ -185,11 +203,11 @@ def generate_ftp_instructions(ftp_dump):
                                                 ][save_file]["last_modified_epoch"]
                                                 > latest_map[profile][title_id][
                                                     save_file
-                                                ]["last_modified_epoch"]
+                                                ][0]
                                             ):
                                                 latest_map[profile][title_id][
                                                     save_file
-                                                ] = tuple(
+                                                ] = (
                                                     ftp_dump[other_xbox_ip][profile][
                                                         title_id
                                                     ][save_file]["last_modified_epoch"],
@@ -226,6 +244,41 @@ def generate_ftp_instructions(ftp_dump):
                                     "path": profile,
                                 }
                             )
-        print("finally")
-        print(instructions)
-        print(latest_map)
+        for profile in latest_map.keys():
+            for title_id in latest_map[profile].keys():
+                for save_file in latest_map[profile][title_id].keys():
+                    for xbox_ip in ftp_dump.keys():
+                        if xbox_ip != save_file[1]:
+                            print(
+                                f"{xbox_ip} does not have the latest version of {save_file}"
+                            )
+                            instructions.append(
+                                {
+                                    "source_ip": save_file[1],
+                                    "destination_ip": xbox_ip,
+                                    "path": f"{profile}/{title_id}/{save_file}",
+                                }
+                            )
+    return instructions
+
+def handle_ftp_instructions(syncer, instructions):
+    for ftp_instruction in instructions:
+        path_parts = ftp_instruction["path"].split("/")
+        if len(path_parts) == 3:
+            # Full path to 1 file
+            profile = path_parts[0]
+            title_id = path_parts[1]
+            file_name = path_parts[2]
+            syncer.download_save_file(syncer, ftp_instruction["source_ip"], profile, title_id, file_name)
+            # syncer.upload_save_file(syncer, ftp_instruction["destination_ip"], profile, title_id, file_name)
+        elif len(path_parts) == 2:
+            # Entire title_id missing
+            profile = path_parts[0]
+            title_id = path_parts[1]
+            syncer.download_title_id_directory(syncer, ftp_instruction["source_ip"], profile, title_id)
+            # syncer.upload_title_id_directory(syncer, ftp_instruction["destination_ip"], profile, title_id)
+        elif len(path_parts) == 1:
+            # Entire profile missing
+            profile = path_parts[0]
+            syncer.download_profile_directory(syncer, ftp_instruction["source_ip"], profile)
+            # syncer.upload_profile_directory(syncer, ftp_instruction["destination_ip"], profile)

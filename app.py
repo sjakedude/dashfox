@@ -231,7 +231,7 @@ def plutonium_domination():
 def sync_xbox_360_saves():
     try:
         syncer = Syncer()
-        output = syncer.sync_saves()
+        output = syncer.query_all()
         return generate_response(200, output)
     except CalledProcessError:
         return generate_response(200, "ERROR")
