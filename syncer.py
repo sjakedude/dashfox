@@ -275,13 +275,13 @@ def generate_ftp_instructions(ftp_dump):
             for title_id in latest_map[profile].keys():
                 for save_file in latest_map[profile][title_id].keys():
                     for xbox_ip in ftp_dump.keys():
-                        if xbox_ip != save_file[1]:
+                        if xbox_ip != latest_map[profile][title_id][save_file][1]:
                             print(
                                 f"{xbox_ip} does not have the latest version of {save_file}"
                             )
                             instructions.append(
                                 {
-                                    "source_ip": save_file[1],
+                                    "source_ip": latest_map[profile][title_id][save_file][1],
                                     "destination_ip": xbox_ip,
                                     "path": f"{profile}/{title_id}/{save_file}",
                                 }
