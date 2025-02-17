@@ -14,9 +14,9 @@ app = Flask(__name__)
 
 
 def generate_response(status, text):
-    response = Response(text, status=status)
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return response
+    res = Response(response=json.dumps(text), status=status)
+    res.headers["Access-Control-Allow-Origin"] = "*"
+    return res
 
 
 @app.route("/")

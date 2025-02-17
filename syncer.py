@@ -70,7 +70,7 @@ class Syncer:
 
         print(f"Downloading {profile}/{title_id} from {xbox}")
         check_output(
-            f'Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_title_id.bat {xbox} {profile} {title_id}',
+            f"Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_title_id.bat {xbox} {profile} {title_id}",
             shell=True,
         )
         print(f"{profile}/{title_id} downloaded from {xbox}")
@@ -79,7 +79,7 @@ class Syncer:
 
         print(f"Downloading {profile} from {xbox}")
         check_output(
-            f'Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_profile.bat {xbox} {profile}',
+            f"Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_profile.bat {xbox} {profile}",
             shell=True,
         )
         print(f"{profile} downloaded from {xbox}")
@@ -265,6 +265,7 @@ def generate_ftp_instructions(ftp_dump):
                             )
     return instructions
 
+
 def handle_ftp_instructions(syncer, instructions):
     for ftp_instruction in instructions:
         path_parts = ftp_instruction["path"].split("/")
@@ -273,16 +274,22 @@ def handle_ftp_instructions(syncer, instructions):
             profile = path_parts[0]
             title_id = path_parts[1]
             file_name = path_parts[2]
-            syncer.download_save_file(syncer, ftp_instruction["source_ip"], profile, title_id, file_name)
+            syncer.download_save_file(
+                syncer, ftp_instruction["source_ip"], profile, title_id, file_name
+            )
             # syncer.upload_save_file(syncer, ftp_instruction["destination_ip"], profile, title_id, file_name)
         elif len(path_parts) == 2:
             # Entire title_id missing
             profile = path_parts[0]
             title_id = path_parts[1]
-            syncer.download_title_id_directory(syncer, ftp_instruction["source_ip"], profile, title_id)
+            syncer.download_title_id_directory(
+                syncer, ftp_instruction["source_ip"], profile, title_id
+            )
             # syncer.upload_title_id_directory(syncer, ftp_instruction["destination_ip"], profile, title_id)
         elif len(path_parts) == 1:
             # Entire profile missing
             profile = path_parts[0]
-            syncer.download_profile_directory(syncer, ftp_instruction["source_ip"], profile)
+            syncer.download_profile_directory(
+                syncer, ftp_instruction["source_ip"], profile
+            )
             # syncer.upload_profile_directory(syncer, ftp_instruction["destination_ip"], profile)
