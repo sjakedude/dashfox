@@ -233,7 +233,10 @@ def plutonium_domination():
 def sync_xbox_360_saves():
     try:
         syncer = Syncer()
+        print("Querying all Xboxs")
         ftp_dump = syncer.query_all()
+        print("FTP Dump")
+        print(ftp_dump)
         ftp_instructions = generate_ftp_instructions(ftp_dump)
         syncer.purge_old_saves()
         syncer.create_directories_on_nas()

@@ -59,7 +59,7 @@ class Syncer:
         print(f"Latest save file {save} downloaded from {xbox}")
 
     def upload_save_file(self, xbox, profile, title_id, save):
-        print(f"About to upload {profile}/{title_id}/{save} files to {xbox}")
+        print(f"About to upload {profile}/{title_id}/{save}  to {xbox}")
         check_output(
             f'Z:\Private\conecommons\scripts\\rom_sync\\upload_xbox_file.bat {xbox} {profile} {title_id} "{save}"',
             shell=True,
