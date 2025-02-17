@@ -104,7 +104,7 @@ class Syncer:
                     else:
                         output = str(
                             check_output(
-                                f"Z:\Private\conecommons\scripts\\rom_sync\\retrieve_xbox_metadata.bat {xbox} {self.profile} {self.config['xbox_games'][self.game]['title_id']}",
+                                f"Z:\Private\conecommons\scripts\\rom_sync\\retrieve_xbox_metadata.bat {xbox} {profile} {game}",
                                 shell=True,
                             )
                         )
