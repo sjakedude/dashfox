@@ -224,6 +224,7 @@ def generate_ftp_instructions(ftp_dump):
                                                     save_file
                                                 ][0]
                                             ):
+                                                print(f"{other_xbox_ip} has the more up to date version of {save_file}")
                                                 latest_map[profile][title_id][
                                                     save_file
                                                 ] = (
@@ -232,6 +233,8 @@ def generate_ftp_instructions(ftp_dump):
                                                     ][save_file]["last_modified_epoch"],
                                                     other_xbox_ip,
                                                 )
+                                            else:
+                                                print(f"{xbox_ip} has the more up to date version of {save_file}")
                                         else:
                                             print(
                                                 f"{other_xbox_ip} does not have gamesave {save_file} under title_id {title_id} under profile {profile}"
