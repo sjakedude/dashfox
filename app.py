@@ -9,6 +9,8 @@ import subprocess
 from subprocess import check_output
 from subprocess import CalledProcessError
 from syncer import Syncer
+from syncer import generate_ftp_instructions
+
 
 app = Flask(__name__)
 
@@ -231,8 +233,9 @@ def plutonium_domination():
 def sync_xbox_360_saves():
     try:
         syncer = Syncer()
-        output = syncer.query_all()
-        return generate_response(200, output)
+        ftp_dump = syncer.query_all()
+        ftp_instructions = generate_ftp_instructions(ftp_dump)
+        return generate_response(200, ftp_instructions)
     except CalledProcessError:
         return generate_response(200, "ERROR")
 
