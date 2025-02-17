@@ -236,6 +236,7 @@ def sync_xbox_360_saves():
         ftp_dump = syncer.query_all()
         ftp_instructions = generate_ftp_instructions(ftp_dump)
         syncer.purge_old_saves()
+        syncer.create_directories_on_nas()
         handle_ftp_instructions(syncer, ftp_instructions)
         return generate_response(200, ftp_instructions)
     except CalledProcessError:

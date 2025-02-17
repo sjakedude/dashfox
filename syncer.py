@@ -51,7 +51,6 @@ class Syncer:
 
     def download_save_file(self, xbox, profile, title_id, save):
 
-        self.create_directory_on_nas(profile, title_id)
         print(f"Downloading {save} from {xbox}")
         check_output(
             f'Z:\Private\conecommons\scripts\\rom_sync\\download_xbox_file.bat {xbox} {profile} {title_id} "{save}"',
@@ -76,13 +75,15 @@ class Syncer:
         )
         print(f"{profile}/{title_id} downloaded from {xbox}")
 
-    def create_directory_on_nas(self, profile, title_id):
-        print(f"Creating {profile}/{title_id}/00000001 on NAS")
-        check_output(
-            f"Z:\Private\conecommons\scripts\\rom_sync\\create_directory_on_nas.bat {profile} {title_id}",
-            shell=True,
-        )
-        print(f"Created {profile}/{title_id}/00000001 on NAS")
+    def create_directories_on_nas(self):
+        for profile in self.profiles:
+            for title_id in self.games:
+                print(f"Creating {profile}/{title_id}/00000001 on NAS")
+                check_output(
+                    f"Z:\Private\conecommons\scripts\\rom_sync\\create_directory_on_nas.bat {profile} {title_id}",
+                    shell=True,
+                )
+                print(f"Created {profile}/{title_id}/00000001 on NAS")
 
     def download_profile_directory(self, xbox, profile):
 
