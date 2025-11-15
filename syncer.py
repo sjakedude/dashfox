@@ -2,23 +2,8 @@
 # and checks every save file metadata for when it was last modified and syncs the
 # save files to the other consoles so they are all up to date with the latest save
 
-import subprocess
 import json
 from subprocess import check_output
-from subprocess import CalledProcessError
-from datetime import datetime
-
-# Gamertag ID
-XBOX_PROFILE_ID = "E00000E4D88A136A" # sjakedude
-
-# Console IP addresses
-JASPER_RGH_IP = "192.168.0.233"
-OFFICE_RGH_IP = "192.168.0.234"
-
-# Game Title ID and Save File Name
-GAME_TITLE_ID = "425307D5"
-GAME_SAVE_NAME = "Gears2Checkpoint"
-
 
 def read_json():
     with open("xbox_config.json", 'r') as file:
@@ -28,10 +13,10 @@ def read_json():
 
 class Syncer:
 
-    def __init__(self, profile, game_names):
+    def __init__(self, profile, game):
         self.config = read_json()
         self.profile = self.verify_profile(profile)
-        self.game_names = self.verify_game_names(game_names)
+        self.game = self.verify_game_name(game)
         self.xboxs = self.get_xbox_ips()
         self.metadata = self.create_metadata_dict()
 
@@ -43,22 +28,18 @@ class Syncer:
             print(f"Profile {profile} not supported")
 
 
-    def verify_game_names(self, game_names):
-        games = game_names.split("|")
-        for game in games:
-            try:
-                self.config["xbox_games"][game]
-            except KeyError:
-                print(f"Game {game} not supported")
-        return games
+    def verify_game_names(self, game):
+        try:
+            self.config["xbox_games"][game]
+        except KeyError:
+            print(f"Game {game} not supported")
+        return game
         
 
     def create_metadata_dict(self):
         metadata = {}
         for xbox in self.xboxs:
-            metadata[xbox] = {}
-            for game_name in self.game_names:
-                metadata[xbox][game_name] = None
+            metadata[xbox] = {self.game: None}
         return metadata
 
     def get_xbox_ips(self):
@@ -144,7 +125,7 @@ class Syncer:
             for game in self.game_names:
                 output = str(
                     check_output(
-                        f"Z:\Private\conecommons\scripts\\rom_sync\\retrieve_metadata.bat {xbox} {self.profile} {self.config["xbox_games"][game]["title_id"]}",
+                        f"Z:\Private\conecommons\scripts\\rom_sync\\retrieve_metadata.bat {xbox} {self.profile} {self.config['xbox_games'][game]['title_id']}",
                         shell=True,
                     )
                 )
