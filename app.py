@@ -501,10 +501,10 @@ def fleet_vehicle_purchases():
         
         elif request.method == "DELETE":
             # Delete purchase record by ID
-            record_id = request.args.get("id")
+            payload = request.get_json()
             vehicle_name = request.args.get("vehicle_name")
             
-            if not record_id:
+            if not payload or "id" not in payload:
                 return generate_response(400, {"error": "Missing 'id' parameter"})
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
@@ -524,7 +524,7 @@ def fleet_vehicle_purchases():
             
             # Find and remove the record
             original_count = len(purchase_records)
-            purchase_records = [record for record in purchase_records if record.get("id") != record_id]
+            purchase_records = [record for record in purchase_records if payload != record]
             
             if len(purchase_records) == original_count:
                 return generate_response(404, {"error": "Record not found"})
@@ -538,7 +538,7 @@ def fleet_vehicle_purchases():
                 except Exception:
                     pass
             
-            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": record_id})
+            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": payload})
             
     except Exception as e:
         return generate_response(500, {"error": str(e)})
