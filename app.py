@@ -397,7 +397,7 @@ def fleet_vehicle_purchases():
         if request.method == "GET":
             # Return all purchase records or filter by vehicle_name if provided
             vehicle_name = request.args.get("vehicle_name")
-            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(" ", "_").replace(".", "_")}_purchases.json"
+            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
 
             purchase_records = []
             if os.path.exists(purchases_path):
