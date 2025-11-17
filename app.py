@@ -319,5 +319,80 @@ def fleet_vehicle_add():
         return generate_response(500, {"error": str(e)})
 
 
+@app.route("/fleet_control/vehicle_maintenance", endpoint="fleet_vehicle_maintenance", methods=["GET", "POST"])
+def fleet_vehicle_maintenance():
+    try:
+        if request.method == "GET":
+            # Return all maintenance records or filter by vehicle_name if provided
+            vehicle_name = request.args.get("vehicle_name")
+            maintenance_path = r"Z:\Private\fleet_control\vehicle_data\vehicle_name_maintenance.json"
+
+            maintenance_records = []
+            if os.path.exists(maintenance_path):
+                try:
+                    with open(maintenance_path, "r", encoding="utf-8") as fh:
+                        maintenance_records = json.load(fh)
+                        if not isinstance(maintenance_records, list):
+                            maintenance_records = []
+                except Exception:
+                    maintenance_records = []
+            
+            if vehicle_name:
+                maintenance_records = [record for record in maintenance_records if record.get("vehicle_name") == vehicle_name]
+            
+            return generate_response(200, maintenance_records)
+        
+        elif request.method == "POST":
+            # Add new maintenance record
+            payload = request.get_json()
+            if not payload:
+                return generate_response(400, {"error": "Missing JSON body"})
+            
+            vehicle_name = payload.get("vehicle_name")
+            date = payload.get("date")
+            description = payload.get("description")
+            cost = payload.get("cost")
+            
+            if not vehicle_name or not isinstance(vehicle_name, str):
+                return generate_response(400, {"error": "Invalid or missing 'vehicle_name'"})
+            if not description or not isinstance(description, str):
+                return generate_response(400, {"error": "Invalid or missing 'description'"})
+            
+            # Load existing maintenance records
+            maintenance_records = []
+            if os.path.exists(maintenance_path):
+                try:
+                    with open(maintenance_path, "r", encoding="utf-8") as fh:
+                        maintenance_records = json.load(fh)
+                        if not isinstance(maintenance_records, list):
+                            maintenance_records = []
+                except Exception:
+                    maintenance_records = []
+            
+            # Create new maintenance record
+            new_record = {
+                "id": f"maint_{int(datetime.now().timestamp())}",
+                "vehicle_name": vehicle_name,
+                "date": date or datetime.now().isoformat(),
+                "description": description,
+                "cost": cost
+            }
+            maintenance_records.append(new_record)
+            
+            # Save to file
+            with open(maintenance_path, "w", encoding="utf-8") as fh:
+                json.dump(maintenance_records, fh, indent=4)
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except Exception:
+                    pass
+            
+            return generate_response(200, new_record)
+            
+    except Exception as e:
+        return generate_response(500, {"error": str(e)})
+
+
 if __name__ == "__main__":
     app.run(host="192.168.0.219", port=5000, debug=True)
