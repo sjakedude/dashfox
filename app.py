@@ -273,8 +273,9 @@ def fleet_vehicle_add():
         if not description or not isinstance(description, str):
             return generate_response(400, {"error": "Invalid or missing 'description'"})
 
-        # Use vehicles.json located next to this module
-        vehicles_path = os.path.join(os.path.dirname(__file__), "vehicles.json")
+        # Use fixed Z: path for vehicles.json
+        z_path = r"Z:\Private\fleet_control\vehicle_data\vehicles.json"
+        vehicles_path = z_path
         vehicles = []
         if os.path.exists(vehicles_path):
             try:
