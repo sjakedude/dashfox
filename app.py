@@ -500,13 +500,12 @@ def fleet_vehicle_maintenance():
             
             # Find and remove the record by ID
             original_count = len(maintenance_records)
-            deleted_record = None
             maintenance_records = [
                 record for record in maintenance_records 
-                if record.get("id") != record_id or (deleted_record := record, False)[1]
+                if record.get("id") != record_id
             ]
             
-            if len(maintenance_records) == original_count:
+            if len(maintenance_records) != (original_count - 1):
                 return generate_response(404, {"error": "Record not found"})
             
             # Save updated records
@@ -691,7 +690,7 @@ def fleet_vehicle_purchases():
             original_count = len(purchase_records)
             purchase_records = [record for record in purchase_records if record.get("id") != record_id]
             
-            if len(purchase_records) == original_count:
+            if len(purchase_records) != (original_count - 1):
                 return generate_response(404, {"error": "Record not found"})
             
             # Save updated records
