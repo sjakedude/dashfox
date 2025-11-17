@@ -419,6 +419,12 @@ def fleet_vehicle_maintenance():
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
             
+            # Convert record_id to integer for comparison
+            try:
+                record_id = int(record_id)
+            except ValueError:
+                return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
+            
             maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
             
             # Load existing maintenance records
@@ -484,6 +490,12 @@ def fleet_vehicle_maintenance():
                 return generate_response(400, {"error": "Missing 'id' parameter"})
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+            
+            # Convert record_id to integer for comparison
+            try:
+                record_id = int(record_id)
+            except ValueError:
+                return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
 
             maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
             
@@ -619,6 +631,12 @@ def fleet_vehicle_purchases():
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
             
+            # Convert record_id to integer for comparison
+            try:
+                record_id = int(record_id)
+            except ValueError:
+                return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
+            
             purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
             
             # Load existing purchase records
@@ -673,6 +691,12 @@ def fleet_vehicle_purchases():
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
             
+            # Convert record_id to integer for comparison
+            try:
+                record_id = int(record_id)
+            except ValueError:
+                return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
+            
             purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
             
             # Load existing purchase records
@@ -690,7 +714,7 @@ def fleet_vehicle_purchases():
             original_count = len(purchase_records)
             purchase_records = [record for record in purchase_records if record.get("id") != record_id]
             
-            if len(purchase_records) != (original_count - 1):
+            if len(purchase_records) == original_count:
                 return generate_response(404, {"error": "Record not found"})
             
             # Save updated records
