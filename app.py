@@ -432,7 +432,7 @@ def fleet_vehicle_maintenance():
         return generate_response(500, {"error": str(e)})
 
 
-@app.route("/fleet_control/vehicle_purchases", endpoint="fleet_vehicle_purchases", methods=["GET", "POST", "DELETE"])
+@app.route("/fleet_control/vehicle_purchases", endpoint="fleet_vehicle_purchases", methods=["GET", "POST", "PUT", "DELETE"])
 def fleet_vehicle_purchases():
     try:
         if request.method == "GET":
@@ -498,6 +498,57 @@ def fleet_vehicle_purchases():
                     pass
             
             return generate_response(200, new_record)
+        
+        elif request.method == "PUT":
+            # Update existing purchase record
+            id = request.args.get("id")
+            payload = request.get_json()
+            if not payload:
+                return generate_response(400, {"error": "Missing JSON body"})
+            
+            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
+            
+            # Load existing purchase records
+            purchase_records = []
+            if os.path.exists(purchases_path):
+                try:
+                    with open(purchases_path, "r", encoding="utf-8") as fh:
+                        purchase_records = json.load(fh)
+                        if not isinstance(purchase_records, list):
+                            purchase_records = []
+                except Exception:
+                    purchase_records = []
+            
+            # Find and update the record
+            record_found = False
+            for i, record in enumerate(purchase_records):
+                if record.get("id") == id:
+                    # Update the record with new data, preserving the ID
+                    updated_record = {
+                        "id": id,
+                        "item": payload.get("item"),
+                        "date_purchased": "Yes",
+                        "installed": payload.get("installed"),
+                        "cost": payload.get("cost"),
+                        "store": payload.get("store"),
+                    }
+                    purchase_records[i] = updated_record
+                    record_found = True
+                    break
+            
+            if not record_found:
+                return generate_response(404, {"error": "Record not found"})
+            
+            # Save updated records
+            with open(purchases_path, "w", encoding="utf-8") as fh:
+                json.dump(purchase_records, fh, indent=4)
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except Exception:
+                    pass
+            
+            return generate_response(200, updated_record)
         
         elif request.method == "DELETE":
             # Delete purchase record by ID
