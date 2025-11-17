@@ -351,7 +351,7 @@ def fleet_vehicle_maintenance():
             job = payload.get("job")
             date_started = payload.get("date_started")
             date_completed = payload.get("date_completed")
-            milage = payload.get("milage")
+            mileage = payload.get("mileage")
             hours = payload.get("hours")
             notes = payload.get("notes")
             cost = payload.get("cost")
@@ -375,8 +375,8 @@ def fleet_vehicle_maintenance():
                 "notes": notes,
                 "cost": cost
             }
-            if milage:
-                new_record["milage"] = milage
+            if mileage:
+                new_record["milage"] = mileage
             elif hours:
                 new_record["hours"] = hours
             maintenance_records.append(new_record)
@@ -395,7 +395,8 @@ def fleet_vehicle_maintenance():
         elif request.method == "DELETE":
             # Delete maintenance record by ID
             payload = request.get_json()            
-            
+            vehicle_name = request.args.get("vehicle_name")
+
             maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
             
             # Load existing maintenance records
