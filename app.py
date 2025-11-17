@@ -319,7 +319,7 @@ def fleet_vehicle_add():
         return generate_response(500, {"error": str(e)})
 
 
-@app.route("/fleet_control/vehicle_maintenance", endpoint="fleet_vehicle_maintenance", methods=["GET", "POST"])
+@app.route("/fleet_control/vehicle_maintenance", endpoint="fleet_vehicle_maintenance", methods=["GET", "POST", "DELETE"])
 def fleet_vehicle_maintenance():
     try:
         if request.method == "GET":
@@ -386,12 +386,53 @@ def fleet_vehicle_maintenance():
                     pass
             
             return generate_response(200, new_record)
+        
+        elif request.method == "DELETE":
+            # Delete maintenance record by ID
+            record_id = request.args.get("id")
+            vehicle_name = request.args.get("vehicle_name")
+            
+            if not record_id:
+                return generate_response(400, {"error": "Missing 'id' parameter"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+            
+            maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
+            
+            # Load existing maintenance records
+            maintenance_records = []
+            if os.path.exists(maintenance_path):
+                try:
+                    with open(maintenance_path, "r", encoding="utf-8") as fh:
+                        maintenance_records = json.load(fh)
+                        if not isinstance(maintenance_records, list):
+                            maintenance_records = []
+                except Exception:
+                    maintenance_records = []
+            
+            # Find and remove the record
+            original_count = len(maintenance_records)
+            maintenance_records = [record for record in maintenance_records if record.get("id") != record_id]
+            
+            if len(maintenance_records) == original_count:
+                return generate_response(404, {"error": "Record not found"})
+            
+            # Save updated records
+            with open(maintenance_path, "w", encoding="utf-8") as fh:
+                json.dump(maintenance_records, fh, indent=4)
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except Exception:
+                    pass
+            
+            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": record_id})
             
     except Exception as e:
         return generate_response(500, {"error": str(e)})
 
 
-@app.route("/fleet_control/vehicle_purchases", endpoint="fleet_vehicle_purchases", methods=["GET", "POST"])
+@app.route("/fleet_control/vehicle_purchases", endpoint="fleet_vehicle_purchases", methods=["GET", "POST", "DELETE"])
 def fleet_vehicle_purchases():
     try:
         if request.method == "GET":
@@ -457,6 +498,47 @@ def fleet_vehicle_purchases():
                     pass
             
             return generate_response(200, new_record)
+        
+        elif request.method == "DELETE":
+            # Delete purchase record by ID
+            record_id = request.args.get("id")
+            vehicle_name = request.args.get("vehicle_name")
+            
+            if not record_id:
+                return generate_response(400, {"error": "Missing 'id' parameter"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+            
+            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
+            
+            # Load existing purchase records
+            purchase_records = []
+            if os.path.exists(purchases_path):
+                try:
+                    with open(purchases_path, "r", encoding="utf-8") as fh:
+                        purchase_records = json.load(fh)
+                        if not isinstance(purchase_records, list):
+                            purchase_records = []
+                except Exception:
+                    purchase_records = []
+            
+            # Find and remove the record
+            original_count = len(purchase_records)
+            purchase_records = [record for record in purchase_records if record.get("id") != record_id]
+            
+            if len(purchase_records) == original_count:
+                return generate_response(404, {"error": "Record not found"})
+            
+            # Save updated records
+            with open(purchases_path, "w", encoding="utf-8") as fh:
+                json.dump(purchase_records, fh, indent=4)
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except Exception:
+                    pass
+            
+            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": record_id})
             
     except Exception as e:
         return generate_response(500, {"error": str(e)})
