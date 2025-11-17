@@ -325,7 +325,7 @@ def fleet_vehicle_maintenance():
         if request.method == "GET":
             # Return all maintenance records or filter by vehicle_name if provided
             vehicle_name = request.args.get("vehicle_name")
-            maintenance_path = r"Z:\Private\fleet_control\vehicle_data\vehicle_name_maintenance.json"
+            maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name}_maintenance.json"
 
             maintenance_records = []
             if os.path.exists(maintenance_path):
