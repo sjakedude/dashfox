@@ -336,10 +336,7 @@ def fleet_vehicle_maintenance():
                             maintenance_records = []
                 except Exception:
                     maintenance_records = []
-            
-            if vehicle_name:
-                maintenance_records = [record for record in maintenance_records if record.get("vehicle_name") == vehicle_name]
-            
+                        
             return generate_response(200, maintenance_records)
         
         elif request.method == "POST":
