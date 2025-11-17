@@ -289,11 +289,31 @@ def fleet_vehicle_add():
         new_item = {"name": name, "description": description}
         vehicles.append(new_item)
 
-        # Persist updated list
+        # Persist updated list (flush and fsync to ensure write-through)
         with open(vehicles_path, "w", encoding="utf-8") as fh:
             json.dump(vehicles, fh, indent=4)
+            fh.flush()
+            try:
+                os.fsync(fh.fileno())
+            except Exception:
+                # os.fsync may not be available on all platforms/open modes; ignore if it fails
+                pass
 
-        return generate_response(200, new_item)
+        # Verify the file was written and read it back
+        file_exists = os.path.exists(vehicles_path)
+        file_count = None
+        try:
+            if file_exists:
+                with open(vehicles_path, "r", encoding="utf-8") as fh:
+                    loaded = json.load(fh)
+                    if isinstance(loaded, list):
+                        file_count = len(loaded)
+        except Exception:
+            file_exists = False
+            file_count = None
+
+        resp = {"vehicle": new_item, "vehicles_path": vehicles_path, "file_exists": file_exists, "total": file_count}
+        return generate_response(200, resp)
     except Exception as e:
         return generate_response(500, {"error": str(e)})
 
