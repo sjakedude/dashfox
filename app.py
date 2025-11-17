@@ -413,21 +413,17 @@ def fleet_vehicle_purchases():
         
         elif request.method == "POST":
             # Add new purchase record
+            vehicle_name = request.args.get("vehicle_name")
             payload = request.get_json()
             if not payload:
                 return generate_response(400, {"error": "Missing JSON body"})
             
-            vehicle_name = payload.get("vehicle_name")
-            date = payload.get("date")
-            description = payload.get("description")
+            item = payload.get("item")
+            date_purchased = payload.get("date_purchased")
+            installed = payload.get("installed")
             cost = payload.get("cost")
-            vendor = payload.get("vendor")
-            
-            if not vehicle_name or not isinstance(vehicle_name, str):
-                return generate_response(400, {"error": "Invalid or missing 'vehicle_name'"})
-            if not description or not isinstance(description, str):
-                return generate_response(400, {"error": "Invalid or missing 'description'"})
-            
+            store = payload.get("store")
+                        
             purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
             
             # Load existing purchase records
@@ -443,12 +439,11 @@ def fleet_vehicle_purchases():
             
             # Create new purchase record
             new_record = {
-                "id": f"purch_{int(datetime.now().timestamp())}",
-                "vehicle_name": vehicle_name,
-                "date": date or datetime.now().isoformat(),
-                "description": description,
+                "item": item,
+                "date_purchased": date_purchased,
+                "installed": installed,
                 "cost": cost,
-                "vendor": vendor
+                "store": store
             }
             purchase_records.append(new_record)
             
