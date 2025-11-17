@@ -504,8 +504,8 @@ def fleet_vehicle_purchases():
             payload = request.get_json()
             vehicle_name = request.args.get("vehicle_name")
             
-            if not payload or "id" not in payload:
-                return generate_response(400, {"error": "Missing 'id' parameter"})
+            if not payload:
+                return generate_response(400, {"error": "Missing 'payload' body"})
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
             
