@@ -319,7 +319,7 @@ def fleet_vehicle_add():
         return generate_response(500, {"error": str(e)})
 
 
-@app.route("/fleet_control/vehicle_maintenance", endpoint="fleet_vehicle_maintenance", methods=["GET", "POST", "DELETE"])
+@app.route("/fleet_control/vehicle_maintenance", endpoint="fleet_vehicle_maintenance", methods=["GET", "POST", "PUT", "DELETE"])
 def fleet_vehicle_maintenance():
     try:
         if request.method == "GET":
@@ -334,6 +334,24 @@ def fleet_vehicle_maintenance():
                         maintenance_records = json.load(fh)
                         if not isinstance(maintenance_records, list):
                             maintenance_records = []
+                        
+                        # Ensure all records have IDs (for backward compatibility)
+                        updated = False
+                        for record in maintenance_records:
+                            if "id" not in record:
+                                record["id"] = str(uuid.uuid4())
+                                updated = True
+                        
+                        # Save back if we added IDs
+                        if updated:
+                            with open(maintenance_path, "w", encoding="utf-8") as write_fh:
+                                json.dump(maintenance_records, write_fh, indent=4)
+                                write_fh.flush()
+                                try:
+                                    os.fsync(write_fh.fileno())
+                                except Exception:
+                                    pass
+                                    
                 except Exception:
                     maintenance_records = []
                         
@@ -346,6 +364,9 @@ def fleet_vehicle_maintenance():
                 return generate_response(400, {"error": "Missing JSON body"})
             
             vehicle_name = request.args.get("vehicle_name")
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+                
             maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
 
             job = payload.get("job")
@@ -367,8 +388,9 @@ def fleet_vehicle_maintenance():
                 except Exception:
                     maintenance_records = []
             
-            # Create new maintenance record
+            # Create new maintenance record with unique ID
             new_record = {
+                "id": len(maintenance_records) + 1,
                 "job": job,
                 "date_started": date_started,
                 "date_completed": date_completed,
@@ -392,10 +414,84 @@ def fleet_vehicle_maintenance():
             
             return generate_response(200, new_record)
         
+        elif request.method == "PUT":
+            # Update existing maintenance record by ID
+            record_id = request.args.get("id")
+            payload = request.get_json()
+            vehicle_name = request.args.get("vehicle_name")
+            
+            if not payload:
+                return generate_response(400, {"error": "Missing JSON body"})
+            if not record_id:
+                return generate_response(400, {"error": "Missing 'id' parameter"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+            
+            maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
+            
+            # Load existing maintenance records
+            maintenance_records = []
+            if os.path.exists(maintenance_path):
+                try:
+                    with open(maintenance_path, "r", encoding="utf-8") as fh:
+                        maintenance_records = json.load(fh)
+                        if not isinstance(maintenance_records, list):
+                            maintenance_records = []
+                except Exception:
+                    maintenance_records = []
+            
+            # Find and update the record
+            record_found = False
+            for i, record in enumerate(maintenance_records):
+                if record.get("id") == record_id:
+                    # Update the record with new data, preserving the ID
+                    updated_record = {
+                        "id": record_id,
+                        "job": payload.get("job", record.get("job")),
+                        "date_started": payload.get("date_started", record.get("date_started")),
+                        "date_completed": payload.get("date_completed", record.get("date_completed")),
+                        "notes": payload.get("notes", record.get("notes")),
+                        "cost": payload.get("cost", record.get("cost"))
+                    }
+                    
+                    # Handle optional fields
+                    if "mileage" in payload:
+                        updated_record["milage"] = payload["mileage"]
+                    elif "milage" in record:
+                        updated_record["milage"] = record["milage"]
+                    
+                    if "hours" in payload:
+                        updated_record["hours"] = payload["hours"]
+                    elif "hours" in record:
+                        updated_record["hours"] = record["hours"]
+                    
+                    maintenance_records[i] = updated_record
+                    record_found = True
+                    break
+            
+            if not record_found:
+                return generate_response(404, {"error": "Record not found"})
+            
+            # Save updated records
+            with open(maintenance_path, "w", encoding="utf-8") as fh:
+                json.dump(maintenance_records, fh, indent=4)
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except Exception:
+                    pass
+            
+            return generate_response(200, updated_record)
+        
         elif request.method == "DELETE":
             # Delete maintenance record by ID
-            payload = request.get_json()            
+            record_id = request.args.get("id")
             vehicle_name = request.args.get("vehicle_name")
+            
+            if not record_id:
+                return generate_response(400, {"error": "Missing 'id' parameter"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
 
             maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
             
@@ -410,9 +506,13 @@ def fleet_vehicle_maintenance():
                 except Exception:
                     maintenance_records = []
             
-            # Find and remove the record
+            # Find and remove the record by ID
             original_count = len(maintenance_records)
-            maintenance_records = [record for record in maintenance_records if payload != record]
+            deleted_record = None
+            maintenance_records = [
+                record for record in maintenance_records 
+                if record.get("id") != record_id or (deleted_record := record, False)[1]
+            ]
             
             if len(maintenance_records) == original_count:
                 return generate_response(404, {"error": "Record not found"})
@@ -426,7 +526,7 @@ def fleet_vehicle_maintenance():
                 except Exception:
                     pass
             
-            return generate_response(200, {"message": "Record deleted successfully", "deleted": payload})
+            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": record_id})
             
     except Exception as e:
         return generate_response(500, {"error": str(e)})
@@ -438,6 +538,9 @@ def fleet_vehicle_purchases():
         if request.method == "GET":
             # Return all purchase records or filter by vehicle_name if provided
             vehicle_name = request.args.get("vehicle_name")
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+                
             purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
 
             purchase_records = []
@@ -447,6 +550,24 @@ def fleet_vehicle_purchases():
                         purchase_records = json.load(fh)
                         if not isinstance(purchase_records, list):
                             purchase_records = []
+                        
+                        # Ensure all records have IDs (for backward compatibility)
+                        updated = False
+                        for record in purchase_records:
+                            if "id" not in record:
+                                record["id"] = str(uuid.uuid4())
+                                updated = True
+                        
+                        # Save back if we added IDs
+                        if updated:
+                            with open(purchases_path, "w", encoding="utf-8") as write_fh:
+                                json.dump(purchase_records, write_fh, indent=4)
+                                write_fh.flush()
+                                try:
+                                    os.fsync(write_fh.fileno())
+                                except Exception:
+                                    pass
+                                    
                 except Exception:
                     purchase_records = []
                         
@@ -458,6 +579,8 @@ def fleet_vehicle_purchases():
             payload = request.get_json()
             if not payload:
                 return generate_response(400, {"error": "Missing JSON body"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
             
             item = payload.get("item")
             date_purchased = payload.get("date_purchased")
@@ -478,8 +601,9 @@ def fleet_vehicle_purchases():
                 except Exception:
                     purchase_records = []
             
-            # Create new purchase record
+            # Create new purchase record with unique ID
             new_record = {
+                "id": len(purchase_records) + 1,
                 "item": item,
                 "date_purchased": date_purchased,
                 "installed": installed,
@@ -501,10 +625,16 @@ def fleet_vehicle_purchases():
         
         elif request.method == "PUT":
             # Update existing purchase record
-            id = request.args.get("id")
+            record_id = request.args.get("id")
+            vehicle_name = request.args.get("vehicle_name")
             payload = request.get_json()
+            
             if not payload:
                 return generate_response(400, {"error": "Missing JSON body"})
+            if not record_id:
+                return generate_response(400, {"error": "Missing 'id' parameter"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
             
             purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
             
@@ -522,15 +652,15 @@ def fleet_vehicle_purchases():
             # Find and update the record
             record_found = False
             for i, record in enumerate(purchase_records):
-                if record.get("id") == id:
-                    # Update the record with new data, preserving the ID
+                if record.get("id") == record_id:
+                    # Update the record with new data, preserving the ID and existing values if not provided
                     updated_record = {
-                        "id": id,
-                        "item": payload.get("item"),
-                        "date_purchased": "Yes",
-                        "installed": payload.get("installed"),
-                        "cost": payload.get("cost"),
-                        "store": payload.get("store"),
+                        "id": record_id,
+                        "item": payload.get("item", record.get("item")),
+                        "date_purchased": payload.get("date_purchased", record.get("date_purchased")),
+                        "installed": payload.get("installed", record.get("installed")),
+                        "cost": payload.get("cost", record.get("cost")),
+                        "store": payload.get("store", record.get("store")),
                     }
                     purchase_records[i] = updated_record
                     record_found = True
@@ -552,11 +682,11 @@ def fleet_vehicle_purchases():
         
         elif request.method == "DELETE":
             # Delete purchase record by ID
-            payload = request.get_json()
+            record_id = request.args.get("id")
             vehicle_name = request.args.get("vehicle_name")
             
-            if not payload:
-                return generate_response(400, {"error": "Missing 'payload' body"})
+            if not record_id:
+                return generate_response(400, {"error": "Missing 'id' parameter"})
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
             
@@ -573,9 +703,9 @@ def fleet_vehicle_purchases():
                 except Exception:
                     purchase_records = []
             
-            # Find and remove the record
+            # Find and remove the record by ID
             original_count = len(purchase_records)
-            purchase_records = [record for record in purchase_records if payload != record]
+            purchase_records = [record for record in purchase_records if record.get("id") != record_id]
             
             if len(purchase_records) == original_count:
                 return generate_response(404, {"error": "Record not found"})
@@ -589,7 +719,7 @@ def fleet_vehicle_purchases():
                 except Exception:
                     pass
             
-            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": payload})
+            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": record_id})
             
     except Exception as e:
         return generate_response(500, {"error": str(e)})
