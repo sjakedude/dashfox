@@ -11,6 +11,7 @@ from subprocess import CalledProcessError
 from syncer import Syncer
 from syncer import generate_ftp_instructions
 from syncer import handle_ftp_instructions
+from fleet_control import retrieve_vehicle_list
 
 app = Flask(__name__)
 
@@ -139,7 +140,7 @@ def minecraft_status():
 
 
 @app.route("/minecraft/start_ftb", endpoint="minecraft_start_ftb", methods=["GET"])
-def plutonium_gungame():
+def minecraft_start_ftb():
     try:
         output = str(
             check_output(
@@ -153,7 +154,7 @@ def plutonium_gungame():
 
 
 @app.route("/minecraft/stop_ftb", endpoint="minecraft_stop_ftb", methods=["GET"])
-def plutonium_domination():
+def minecraft_stop_ftb():
     try:
         output = str(
             check_output(
@@ -169,7 +170,7 @@ def plutonium_domination():
 @app.route(
     "/minecraft/start_latest", endpoint="minecraft_start_latest", methods=["GET"]
 )
-def plutonium_gungame():
+def minecraft_start_latest():
     try:
         output = str(
             check_output(
@@ -183,7 +184,7 @@ def plutonium_gungame():
 
 
 @app.route("/minecraft/stop_latest", endpoint="minecraft_stop_latest", methods=["GET"])
-def plutonium_domination():
+def minecraft_stop_latest():
     try:
         output = str(
             check_output(
@@ -197,7 +198,7 @@ def plutonium_domination():
 
 
 @app.route("/minecraft/start_beta", endpoint="minecraft_start_beta", methods=["GET"])
-def plutonium_gungame():
+def minecraft_start_beta():
     try:
         output = str(
             check_output(
@@ -211,7 +212,7 @@ def plutonium_gungame():
 
 
 @app.route("/minecraft/stop_beta", endpoint="minecraft_stop_beta", methods=["GET"])
-def plutonium_domination():
+def minecraft_stop_beta():
     try:
         output = str(
             check_output(
@@ -246,6 +247,15 @@ def sync_xbox_360_saves():
         return generate_response(200, ftp_instructions)
     except CalledProcessError:
         return generate_response(200, "ERROR")
+
+
+@app.route("/fleet_control/vehicle_list", endpoint="fleet_vehicle_list", methods=["GET"])
+def fleet_vehicle_list():
+    try:
+        vehicles = retrieve_vehicle_list()
+        return generate_response(200, vehicles)
+    except Exception as e:
+        return generate_response(500, {"error": str(e)})
 
 
 if __name__ == "__main__":
