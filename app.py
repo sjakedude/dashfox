@@ -335,22 +335,14 @@ def fleet_vehicle_maintenance():
                         if not isinstance(maintenance_records, list):
                             maintenance_records = []
                         
-                        # Ensure all records have IDs (for backward compatibility)
-                        updated = False
-                        for record in maintenance_records:
-                            if "id" not in record:
-                                record["id"] = str(uuid.uuid4())
-                                updated = True
-                        
-                        # Save back if we added IDs
-                        if updated:
-                            with open(maintenance_path, "w", encoding="utf-8") as write_fh:
-                                json.dump(maintenance_records, write_fh, indent=4)
-                                write_fh.flush()
-                                try:
-                                    os.fsync(write_fh.fileno())
-                                except Exception:
-                                    pass
+                        # Save back
+                        with open(maintenance_path, "w", encoding="utf-8") as write_fh:
+                            json.dump(maintenance_records, write_fh, indent=4)
+                            write_fh.flush()
+                            try:
+                                os.fsync(write_fh.fileno())
+                            except Exception:
+                                pass
                                     
                 except Exception:
                     maintenance_records = []
@@ -551,22 +543,14 @@ def fleet_vehicle_purchases():
                         if not isinstance(purchase_records, list):
                             purchase_records = []
                         
-                        # Ensure all records have IDs (for backward compatibility)
-                        updated = False
-                        for record in purchase_records:
-                            if "id" not in record:
-                                record["id"] = str(uuid.uuid4())
-                                updated = True
-                        
-                        # Save back if we added IDs
-                        if updated:
-                            with open(purchases_path, "w", encoding="utf-8") as write_fh:
-                                json.dump(purchase_records, write_fh, indent=4)
-                                write_fh.flush()
-                                try:
-                                    os.fsync(write_fh.fileno())
-                                except Exception:
-                                    pass
+                        # Save Back
+                        with open(purchases_path, "w", encoding="utf-8") as write_fh:
+                            json.dump(purchase_records, write_fh, indent=4)
+                            write_fh.flush()
+                            try:
+                                os.fsync(write_fh.fileno())
+                            except Exception:
+                                pass
                                     
                 except Exception:
                     purchase_records = []
