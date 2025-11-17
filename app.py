@@ -428,7 +428,7 @@ def fleet_vehicle_purchases():
             if not description or not isinstance(description, str):
                 return generate_response(400, {"error": "Invalid or missing 'description'"})
             
-            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name}_purchases.json"
+            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
             
             # Load existing purchase records
             purchase_records = []
