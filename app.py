@@ -258,5 +258,45 @@ def fleet_vehicle_list():
         return generate_response(500, {"error": str(e)})
 
 
+@app.route("/fleet_control/vehicle_add", endpoint="fleet_vehicle_add", methods=["POST"])
+def fleet_vehicle_add():
+    try:
+        payload = request.get_json()
+        if not payload:
+            return generate_response(400, {"error": "Missing JSON body"})
+
+        name = payload.get("name")
+        description = payload.get("description")
+
+        if not name or not isinstance(name, str):
+            return generate_response(400, {"error": "Invalid or missing 'name'"})
+        if not description or not isinstance(description, str):
+            return generate_response(400, {"error": "Invalid or missing 'description'"})
+
+        # Use vehicles.json located next to this module
+        vehicles_path = os.path.join(os.path.dirname(__file__), "vehicles.json")
+        vehicles = []
+        if os.path.exists(vehicles_path):
+            try:
+                with open(vehicles_path, "r", encoding="utf-8") as fh:
+                    vehicles = json.load(fh)
+                    if not isinstance(vehicles, list):
+                        vehicles = []
+            except Exception:
+                # If file exists but is invalid, overwrite with a fresh list
+                vehicles = []
+
+        new_item = {"name": name, "description": description}
+        vehicles.append(new_item)
+
+        # Persist updated list
+        with open(vehicles_path, "w", encoding="utf-8") as fh:
+            json.dump(vehicles, fh, indent=4)
+
+        return generate_response(200, new_item)
+    except Exception as e:
+        return generate_response(500, {"error": str(e)})
+
+
 if __name__ == "__main__":
     app.run(host="192.168.0.219", port=5000, debug=True)
