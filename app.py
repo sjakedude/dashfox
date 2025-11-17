@@ -345,16 +345,17 @@ def fleet_vehicle_maintenance():
             if not payload:
                 return generate_response(400, {"error": "Missing JSON body"})
             
-            vehicle_name = payload.get("vehicle_name")
-            date = payload.get("date")
-            description = payload.get("description")
+            vehicle_name = request.args.get("vehicle_name")
+            maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
+
+            job = payload.get("job")
+            date_started = payload.get("date_started")
+            date_completed = payload.get("date_completed")
+            milage = payload.get("milage")
+            hours = payload.get("hours")
+            notes = payload.get("notes")
             cost = payload.get("cost")
-            
-            if not vehicle_name or not isinstance(vehicle_name, str):
-                return generate_response(400, {"error": "Invalid or missing 'vehicle_name'"})
-            if not description or not isinstance(description, str):
-                return generate_response(400, {"error": "Invalid or missing 'description'"})
-            
+                        
             # Load existing maintenance records
             maintenance_records = []
             if os.path.exists(maintenance_path):
@@ -368,12 +369,16 @@ def fleet_vehicle_maintenance():
             
             # Create new maintenance record
             new_record = {
-                "id": f"maint_{int(datetime.now().timestamp())}",
-                "vehicle_name": vehicle_name,
-                "date": date or datetime.now().isoformat(),
-                "description": description,
+                "job": job,
+                "date_started": date_started,
+                "date_completed": date_completed,
+                "notes": notes,
                 "cost": cost
             }
+            if milage:
+                new_record["milage"] = milage
+            elif hours:
+                new_record["hours"] = hours
             maintenance_records.append(new_record)
             
             # Save to file
@@ -389,13 +394,7 @@ def fleet_vehicle_maintenance():
         
         elif request.method == "DELETE":
             # Delete maintenance record by ID
-            record_id = request.args.get("id")
-            vehicle_name = request.args.get("vehicle_name")
-            
-            if not record_id:
-                return generate_response(400, {"error": "Missing 'id' parameter"})
-            if not vehicle_name:
-                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+            payload = request.get_json()            
             
             maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
             
@@ -412,7 +411,7 @@ def fleet_vehicle_maintenance():
             
             # Find and remove the record
             original_count = len(maintenance_records)
-            maintenance_records = [record for record in maintenance_records if record.get("id") != record_id]
+            maintenance_records = [record for record in maintenance_records if payload != record]
             
             if len(maintenance_records) == original_count:
                 return generate_response(404, {"error": "Record not found"})
@@ -426,7 +425,7 @@ def fleet_vehicle_maintenance():
                 except Exception:
                     pass
             
-            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": record_id})
+            return generate_response(200, {"message": "Record deleted successfully", "deleted": payload})
             
     except Exception as e:
         return generate_response(500, {"error": str(e)})
