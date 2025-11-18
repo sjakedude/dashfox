@@ -732,5 +732,207 @@ def fleet_vehicle_purchases():
         return generate_response(500, {"error": str(e)})
 
 
+@app.route("/fleet_control/vehicle_hidden_costs", endpoint="fleet_vehicle_hidden_costs", methods=["GET", "POST", "PUT", "DELETE"])
+def fleet_vehicle_hidden_costs():
+    try:
+        if request.method == "GET":
+            # Return all hidden cost records or filter by vehicle_name if provided
+            vehicle_name = request.args.get("vehicle_name")
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+                
+            hidden_costs_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
+
+            hidden_cost_records = []
+            if os.path.exists(hidden_costs_path):
+                try:
+                    with open(hidden_costs_path, "r", encoding="utf-8") as fh:
+                        hidden_cost_records = json.load(fh)
+                        if not isinstance(hidden_cost_records, list):
+                            hidden_cost_records = []
+                        
+                        # Ensure all records have IDs (for backward compatibility)
+                        updated = False
+                        for i, record in enumerate(hidden_cost_records):
+                            if "id" not in record:
+                                record["id"] = i + 1
+                                updated = True
+                        
+                        # Save back if we added IDs
+                        if updated:
+                            with open(hidden_costs_path, "w", encoding="utf-8") as write_fh:
+                                json.dump(hidden_cost_records, write_fh, indent=4)
+                                write_fh.flush()
+                                try:
+                                    os.fsync(write_fh.fileno())
+                                except Exception:
+                                    pass
+                                    
+                except Exception:
+                    hidden_cost_records = []
+                        
+            return generate_response(200, hidden_cost_records)
+        
+        elif request.method == "POST":
+            # Add new hidden cost record
+            vehicle_name = request.args.get("vehicle_name")
+            payload = request.get_json()
+            if not payload:
+                return generate_response(400, {"error": "Missing JSON body"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+            
+            date = payload.get("date")
+            name = payload.get("name")
+            description = payload.get("description")
+            cost = payload.get("cost")
+                        
+            hidden_costs_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
+            
+            # Load existing hidden cost records
+            hidden_cost_records = []
+            if os.path.exists(hidden_costs_path):
+                try:
+                    with open(hidden_costs_path, "r", encoding="utf-8") as fh:
+                        hidden_cost_records = json.load(fh)
+                        if not isinstance(hidden_cost_records, list):
+                            hidden_cost_records = []
+                except Exception:
+                    hidden_cost_records = []
+            
+            # Create new hidden cost record with unique ID
+            new_record = {
+                "date": date,
+                "name": name,
+                "description": description,
+                "cost": cost,
+                "id": len(hidden_cost_records) + 1
+            }
+            hidden_cost_records.append(new_record)
+            
+            # Save to file
+            with open(hidden_costs_path, "w", encoding="utf-8") as fh:
+                json.dump(hidden_cost_records, fh, indent=4)
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except Exception:
+                    pass
+            
+            return generate_response(200, new_record)
+        
+        elif request.method == "PUT":
+            # Update existing hidden cost record
+            record_id = request.args.get("id")
+            vehicle_name = request.args.get("vehicle_name")
+            payload = request.get_json()
+            
+            if not payload:
+                return generate_response(400, {"error": "Missing JSON body"})
+            if not record_id:
+                return generate_response(400, {"error": "Missing 'id' parameter"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+            
+            # Convert record_id to integer for comparison
+            try:
+                record_id = int(record_id)
+            except ValueError:
+                return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
+            
+            hidden_costs_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
+            
+            # Load existing hidden cost records
+            hidden_cost_records = []
+            if os.path.exists(hidden_costs_path):
+                try:
+                    with open(hidden_costs_path, "r", encoding="utf-8") as fh:
+                        hidden_cost_records = json.load(fh)
+                        if not isinstance(hidden_cost_records, list):
+                            hidden_cost_records = []
+                except Exception:
+                    hidden_cost_records = []
+            
+            # Find and update the record
+            record_found = False
+            for i, record in enumerate(hidden_cost_records):
+                if record.get("id") == record_id:
+                    # Update the record with new data, preserving the ID and existing values if not provided
+                    updated_record = {
+                        "date": payload.get("date", record.get("date")),
+                        "name": payload.get("name", record.get("name")),
+                        "description": payload.get("description", record.get("description")),
+                        "cost": payload.get("cost", record.get("cost")),
+                        "id": record_id
+                    }
+                    hidden_cost_records[i] = updated_record
+                    record_found = True
+                    break
+            
+            if not record_found:
+                return generate_response(404, {"error": "Record not found"})
+            
+            # Save updated records
+            with open(hidden_costs_path, "w", encoding="utf-8") as fh:
+                json.dump(hidden_cost_records, fh, indent=4)
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except Exception:
+                    pass
+            
+            return generate_response(200, updated_record)
+        
+        elif request.method == "DELETE":
+            # Delete hidden cost record by ID
+            record_id = request.args.get("id")
+            vehicle_name = request.args.get("vehicle_name")
+            
+            if not record_id:
+                return generate_response(400, {"error": "Missing 'id' parameter"})
+            if not vehicle_name:
+                return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
+            
+            # Convert record_id to integer for comparison
+            try:
+                record_id = int(record_id)
+            except ValueError:
+                return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
+            
+            hidden_costs_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
+            
+            # Load existing hidden cost records
+            hidden_cost_records = []
+            if os.path.exists(hidden_costs_path):
+                try:
+                    with open(hidden_costs_path, "r", encoding="utf-8") as fh:
+                        hidden_cost_records = json.load(fh)
+                        if not isinstance(hidden_cost_records, list):
+                            hidden_cost_records = []
+                except Exception:
+                    hidden_cost_records = []
+            
+            # Find and remove the record by ID
+            original_count = len(hidden_cost_records)
+            hidden_cost_records = [record for record in hidden_cost_records if record.get("id") != record_id]
+            
+            if len(hidden_cost_records) == original_count:
+                return generate_response(404, {"error": "Record not found"})
+            
+            # Save updated records
+            with open(hidden_costs_path, "w", encoding="utf-8") as fh:
+                json.dump(hidden_cost_records, fh, indent=4)
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except Exception:
+                    pass
+            
+            return generate_response(200, {"message": "Record deleted successfully", "deleted_id": record_id})
+            
+    except Exception as e:
+        return generate_response(500, {"error": str(e)})
+
+
 if __name__ == "__main__":
     app.run(host="192.168.0.219", port=5000, debug=True)
