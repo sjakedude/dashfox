@@ -15,6 +15,7 @@ from fleet_control import retrieve_vehicle_list
 
 app = Flask(__name__)
 
+VEHICLE_DATA_PATH = r"Z:\Private\apache_http_server\TheConeNetworkPortal\records\vehicle_data\"
 
 def generate_response(status, text):
     res = Response(response=json.dumps(text), status=status)
@@ -274,7 +275,7 @@ def fleet_vehicle_add():
             return generate_response(400, {"error": "Invalid or missing 'description'"})
 
         # Use fixed Z: path for vehicles.json
-        z_path = r"Z:\Private\fleet_control\vehicle_data\vehicles.json"
+        z_path =rf"{VEHICLE_DATA_PATH}vehicles.json"
         vehicles_path = z_path
         vehicles = []
         if os.path.exists(vehicles_path):
@@ -325,7 +326,7 @@ def fleet_vehicle_maintenance():
         if request.method == "GET":
             # Return all maintenance records or filter by vehicle_name if provided
             vehicle_name = request.args.get("vehicle_name")
-            maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
+            maintenance_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
 
             maintenance_records = []
             if os.path.exists(maintenance_path):
@@ -359,7 +360,7 @@ def fleet_vehicle_maintenance():
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
                 
-            maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
+            maintenance_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
 
             job = payload.get("job")
             date_started = payload.get("date_started")
@@ -425,7 +426,7 @@ def fleet_vehicle_maintenance():
             except ValueError:
                 return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
             
-            maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
+            maintenance_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
             
             # Load existing maintenance records
             maintenance_records = []
@@ -497,7 +498,7 @@ def fleet_vehicle_maintenance():
             except ValueError:
                 return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
 
-            maintenance_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
+            maintenance_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_maintenance.json"
             
             # Load existing maintenance records
             maintenance_records = []
@@ -544,7 +545,7 @@ def fleet_vehicle_purchases():
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
                 
-            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
+            purchases_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
 
             purchase_records = []
             if os.path.exists(purchases_path):
@@ -583,7 +584,7 @@ def fleet_vehicle_purchases():
             cost = payload.get("cost")
             store = payload.get("store")
                         
-            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
+            purchases_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
             
             # Load existing purchase records
             purchase_records = []
@@ -637,7 +638,7 @@ def fleet_vehicle_purchases():
             except ValueError:
                 return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
             
-            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
+            purchases_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
             
             # Load existing purchase records
             purchase_records = []
@@ -697,7 +698,7 @@ def fleet_vehicle_purchases():
             except ValueError:
                 return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
             
-            purchases_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
+            purchases_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_purchases.json"
             
             # Load existing purchase records
             purchase_records = []
@@ -741,7 +742,7 @@ def fleet_vehicle_hidden_costs():
             if not vehicle_name:
                 return generate_response(400, {"error": "Missing 'vehicle_name' parameter"})
                 
-            hidden_costs_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
+            hidden_costs_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
 
             hidden_cost_records = []
             if os.path.exists(hidden_costs_path):
@@ -787,7 +788,7 @@ def fleet_vehicle_hidden_costs():
             description = payload.get("description")
             cost = payload.get("cost")
                         
-            hidden_costs_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
+            hidden_costs_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
             
             # Load existing hidden cost records
             hidden_cost_records = []
@@ -840,7 +841,7 @@ def fleet_vehicle_hidden_costs():
             except ValueError:
                 return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
             
-            hidden_costs_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
+            hidden_costs_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
             
             # Load existing hidden cost records
             hidden_cost_records = []
@@ -899,7 +900,7 @@ def fleet_vehicle_hidden_costs():
             except ValueError:
                 return generate_response(400, {"error": "Invalid 'id' parameter - must be a number"})
             
-            hidden_costs_path = rf"Z:\Private\fleet_control\vehicle_data\{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
+            hidden_costs_path = rf"{VEHICLE_DATA_PATH}{vehicle_name.replace(' ', '_').replace('.', '_')}_hidden_costs.json"
             
             # Load existing hidden cost records
             hidden_cost_records = []
