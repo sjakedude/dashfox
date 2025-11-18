@@ -15,7 +15,7 @@ from fleet_control import retrieve_vehicle_list
 
 app = Flask(__name__)
 
-VEHICLE_DATA_PATH = r"Z:\Private\apache_http_server\TheConeNetworkPortal\records\vehicle_data\"
+VEHICLE_DATA_PATH = r"Z:\Private\apache_http_server\TheConeNetworkPortal\records\vehicle_data\\"
 
 def generate_response(status, text):
     res = Response(response=json.dumps(text), status=status)
