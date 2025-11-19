@@ -288,6 +288,25 @@ def fleet_vehicle_add():
                 # If file exists but is invalid, overwrite with a fresh list
                 vehicles = []
 
+        # Check if vehicle already exists
+        for existing_vehicle in vehicles:
+            if existing_vehicle.get("name", "").lower() == name.lower():
+                return generate_response(409, {"error": f"Vehicle '{name}' already exists"})
+
+        # Check if JSON files already exist
+        sanitized_name = name.replace(' ', '_').replace('.', '_')
+        file_types = ['purchases', 'maintenance', 'hidden_costs']
+        existing_files = []
+        
+        for file_type in file_types:
+            file_path = rf"{VEHICLE_DATA_PATH}{sanitized_name}_{file_type}.json"
+            if os.path.exists(file_path):
+                existing_files.append(file_type)
+        
+        # If any files exist, warn user but don't fail
+        if existing_files:
+            print(f"Warning: Some JSON files already exist for '{name}': {existing_files}")
+
         new_item = {"name": name, "description": description}
         vehicles.append(new_item)
 
@@ -302,11 +321,8 @@ def fleet_vehicle_add():
                 pass
 
         # Create empty JSON files for purchases, maintenance, and hidden costs
-        sanitized_name = name.replace(' ', '_').replace('.', '_')
         files_created = []
-        
-        # List of file types to create
-        file_types = ['purchases', 'maintenance', 'hidden_costs']
+        files_skipped = []
         
         for file_type in file_types:
             file_path = rf"{VEHICLE_DATA_PATH}{sanitized_name}_{file_type}.json"
@@ -321,6 +337,8 @@ def fleet_vehicle_add():
                         except Exception:
                             pass
                     files_created.append(file_type)
+                else:
+                    files_skipped.append(file_type)
             except Exception as e:
                 # Log error but don't fail the vehicle creation
                 print(f"Warning: Could not create {file_type} file for {name}: {e}")
@@ -328,15 +346,22 @@ def fleet_vehicle_add():
         # Verify the file was written and read it back
         file_exists = os.path.exists(vehicles_path)
         file_count = None
+        vehicle_added_successfully = False
         try:
             if file_exists:
                 with open(vehicles_path, "r", encoding="utf-8") as fh:
                     loaded = json.load(fh)
                     if isinstance(loaded, list):
                         file_count = len(loaded)
+                        # Verify the vehicle was actually added to the array
+                        for vehicle in loaded:
+                            if vehicle.get("name", "").lower() == name.lower():
+                                vehicle_added_successfully = True
+                                break
         except Exception:
             file_exists = False
             file_count = None
+            vehicle_added_successfully = False
 
         resp = {
             "vehicle": new_item, 
@@ -344,7 +369,9 @@ def fleet_vehicle_add():
             "file_exists": file_exists, 
             "total": file_count,
             "files_created": files_created,
-            "sanitized_name": sanitized_name
+            "files_skipped": files_skipped,
+            "sanitized_name": sanitized_name,
+            "vehicle_added_successfully": vehicle_added_successfully
         }
         return generate_response(200, resp)
     except Exception as e:
