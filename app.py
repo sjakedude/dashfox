@@ -293,7 +293,7 @@ def fleet_vehicle_add():
             if existing_vehicle.get("name", "").lower() == name.lower():
                 return generate_response(409, {"error": f"Vehicle '{name}' already exists"})
 
-        # Check if JSON files already exist
+        # Check if JSON files already exist (for informational purposes)
         sanitized_name = name.replace(' ', '_').replace('.', '_')
         file_types = ['purchases', 'maintenance', 'hidden_costs']
         existing_files = []
@@ -303,9 +303,9 @@ def fleet_vehicle_add():
             if os.path.exists(file_path):
                 existing_files.append(file_type)
         
-        # If any files exist, warn user but don't fail
+        # Log existing files but allow the operation to continue
         if existing_files:
-            print(f"Warning: Some JSON files already exist for '{name}': {existing_files}")
+            print(f"Info: Found existing JSON files for '{name}': {existing_files}. Will add vehicle to vehicles.json and skip creating existing files.")
 
         new_item = {"name": name, "description": description}
         vehicles.append(new_item)
