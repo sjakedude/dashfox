@@ -307,7 +307,7 @@ def fleet_vehicle_add():
         if existing_files:
             print(f"Info: Found existing JSON files for '{name}': {existing_files}. Will add vehicle to vehicles.json and skip creating existing files.")
 
-        new_item = {"name": name, "description": description}
+        new_item = {"id": len(vehicles) + 1, "name": name, "description": description}
         vehicles.append(new_item)
 
         # Persist updated list (flush and fsync to ensure write-through)
