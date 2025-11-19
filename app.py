@@ -11,7 +11,6 @@ from subprocess import CalledProcessError
 from syncer import Syncer
 from syncer import generate_ftp_instructions
 from syncer import handle_ftp_instructions
-from fleet_control import retrieve_vehicle_list
 from typing import Any, List, Dict, Union
 
 app = Flask(__name__)
