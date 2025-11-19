@@ -301,6 +301,30 @@ def fleet_vehicle_add():
                 # os.fsync may not be available on all platforms/open modes; ignore if it fails
                 pass
 
+        # Create empty JSON files for purchases, maintenance, and hidden costs
+        sanitized_name = name.replace(' ', '_').replace('.', '_')
+        files_created = []
+        
+        # List of file types to create
+        file_types = ['purchases', 'maintenance', 'hidden_costs']
+        
+        for file_type in file_types:
+            file_path = rf"{VEHICLE_DATA_PATH}{sanitized_name}_{file_type}.json"
+            try:
+                # Only create if file doesn't already exist
+                if not os.path.exists(file_path):
+                    with open(file_path, "w", encoding="utf-8") as fh:
+                        json.dump([], fh, indent=4)  # Create empty array
+                        fh.flush()
+                        try:
+                            os.fsync(fh.fileno())
+                        except Exception:
+                            pass
+                    files_created.append(file_type)
+            except Exception as e:
+                # Log error but don't fail the vehicle creation
+                print(f"Warning: Could not create {file_type} file for {name}: {e}")
+
         # Verify the file was written and read it back
         file_exists = os.path.exists(vehicles_path)
         file_count = None
@@ -314,7 +338,14 @@ def fleet_vehicle_add():
             file_exists = False
             file_count = None
 
-        resp = {"vehicle": new_item, "vehicles_path": vehicles_path, "file_exists": file_exists, "total": file_count}
+        resp = {
+            "vehicle": new_item, 
+            "vehicles_path": vehicles_path, 
+            "file_exists": file_exists, 
+            "total": file_count,
+            "files_created": files_created,
+            "sanitized_name": sanitized_name
+        }
         return generate_response(200, resp)
     except Exception as e:
         return generate_response(500, {"error": str(e)})
