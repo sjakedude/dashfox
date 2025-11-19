@@ -3,6 +3,8 @@ import json
 import os
 from typing import Any, List, Dict, Union
 
+from app import VEHICLE_DATA_PATH
+
 
 def retrieve_vehicle_list(source: Union[str, None] = None) -> Union[List[Dict[str, Any]], Dict[str, Any]]:
 	"""
@@ -21,7 +23,7 @@ def retrieve_vehicle_list(source: Union[str, None] = None) -> Union[List[Dict[st
 		print(f"Using provided source: {file_path}")
 	else:
 		# Prefer the network-mounted vehicle list if available
-		z_path = r"Z:\Private\fleet_control\vehicle_data\vehicles.json"
+		z_path = rf"{VEHICLE_DATA_PATH}vehicles.json"
 		print(f"Checking Z: path: {z_path}")
 
 		# choose the first existing path
